@@ -1,0 +1,2934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Allistar Center — Phi-Ratio Geometry Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --g-hi:#EED4A3; --g-base:#C9A84C; --g-mid:#B2936B; --g-deep:#8A6830; --g-shad:#4A3210;
+  --navy:#080f28; --navy2:#0c1535;
+  --btn-bg:#0d1428; --btn-border:#4a3810; --btn-text:#c9a84c;
+  /* Typography scale */
+  --text-body:15px; --text-sm:13px; --text-xs:12px; --text-xxs:11px;
+  --text-label:12px; --lh:1.75;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:linear-gradient(160deg,#050d20 0%,#08102a 50%,#040810 100%);min-height:100vh;font-family:'Exo 2',sans-serif;color:#e0d8c0;padding:20px;font-size:var(--text-body);line-height:var(--lh);font-weight:400;}
+
+/* ── PANEL ── */
+.panel{max-width:980px;margin:0 auto;background:linear-gradient(160deg,#080f28 0%,#0c1535 60%,#060a1c 100%);border:2px solid var(--g-deep);border-radius:10px;overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,0.8),inset 0 1px 0 rgba(201,168,76,0.15);position:relative;}
+.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g-hi) 20%,var(--g-base) 50%,var(--g-hi) 80%,transparent);}
+
+/* ── HEADER ── */
+.header{display:flex;align-items:center;gap:16px;padding:18px 32px 14px;border-bottom:1px solid rgba(201,168,76,0.2);background:linear-gradient(180deg,rgba(12,8,2,0.95),rgba(8,12,28,0.6));}
+.logo-img{width:56px;height:56px;border-radius:50%;border:2px solid var(--g-base);box-shadow:0 0 18px rgba(206,163,93,0.55);flex-shrink:0;object-fit:cover;}
+.head-brand{font-size:16px;font-weight:700;letter-spacing:3px;color:var(--g-base);}
+.head-sub{font-size:var(--text-xxs);letter-spacing:2px;color:rgba(178,147,107,0.85);margin-top:3px;}
+
+/* ── TABS ── */
+.tab-row{background:rgba(0,0,0,0.2);border-bottom:1px solid rgba(206,163,93,0.15);}
+.tab{padding:10px 8px;text-align:center;font-size:13px;font-weight:500;color:var(--btn-text);background:var(--btn-bg);border:1.5px solid var(--btn-border);border-radius:6px;cursor:pointer;outline:none;box-shadow:none;text-shadow:none;transition:border-color 0.15s,box-shadow 0.15s,color 0.15s;}
+.tab:hover:not(.active){border-color:#8a6820;color:#e8c870;}
+.tab.active{color:#e8c870;font-weight:600;border-color:var(--g-base);box-shadow:0 4px 12px rgba(201,168,76,0.35),0 2px 6px rgba(201,168,76,0.2);}
+
+.content{padding:24px 32px;}
+.pc{display:none;}.pc.active{display:block;}
+
+/* ── BUTTONS ── */
+.btn{padding:10px 22px;font-family:'Exo 2',sans-serif;font-size:var(--text-sm);font-weight:600;color:var(--btn-text);background:var(--btn-bg);border:1.5px solid var(--btn-border);border-radius:6px;cursor:pointer;outline:none;box-sizing:none;text-shadow:none;transition:border-color 0.15s,box-shadow 0.15s,color 0.15s;}
+.btn:hover{border-color:#8a6820;color:#e8c870;}
+.btn:active{border-color:var(--g-base);color:#e8c870;box-shadow:0 4px 14px rgba(201,168,76,0.4);}
+.btn.primary{border-color:#6a5018;}
+
+/* ── LABELS ── */
+.lbl{font-size:var(--text-label);font-weight:600;letter-spacing:1.5px;color:var(--g-base);text-transform:uppercase;margin-bottom:8px;margin-top:16px;}
+.lbl:first-child{margin-top:0;}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px;}
+
+/* ── INPUTS ── */
+input[type=number],input[type=text]{background:rgba(220,232,255,0.92);border:1.5px solid var(--g-deep);border-radius:5px;color:#0a0e28;font-family:'Exo 2',sans-serif;font-size:var(--text-sm);padding:10px 12px;}
+input:focus{outline:none;border-color:var(--g-base);background:#fff;}
+
+/* ── SELECT ── */
+.sw{position:relative;display:inline-block;}
+.sw::after{content:'▾';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#1a0c00;font-size:14px;font-weight:900;pointer-events:none;}
+select{appearance:none;-webkit-appearance:none;background:linear-gradient(180deg,var(--g-hi) 0%,var(--g-base) 20%,var(--g-mid) 40%,var(--g-deep) 55%,var(--g-mid) 68%,var(--g-base) 82%,var(--g-hi) 100%);border:1px solid var(--g-shad);border-radius:5px;color:#1a0800;font-family:'Exo 2',sans-serif;font-size:var(--text-sm);font-weight:700;padding:10px 36px 10px 14px;cursor:pointer;outline:none;box-shadow:inset 0 2px 0 rgba(238,212,163,0.4),0 3px 0 var(--g-shad);}
+select option{background:#1a1200;color:var(--g-base);}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.2),transparent);margin:18px 0;}
+
+/* ── STAT CARDS ── */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0;}
+@media(max-width:700px){.sg{grid-template-columns:repeat(2,1fr);}}
+.sc{background:linear-gradient(180deg,rgba(0,8,30,0.85),rgba(0,5,20,0.9));border:1px solid rgba(201,168,76,0.22);border-radius:6px;padding:12px 14px;position:relative;overflow:hidden;}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--g-base),transparent);}
+.sv{font-size:16px;font-weight:600;color:#60c8ff;font-family:'Share Tech Mono',monospace;line-height:1;margin-bottom:4px;}
+.sl{font-size:var(--text-xxs);color:rgba(178,147,107,0.85);letter-spacing:1.5px;text-transform:uppercase;}
+
+/* ── PHI TABLE ── */
+.phi-table{width:100%;border-collapse:collapse;font-size:15px;margin-top:10px;}
+.phi-table th{text-align:left;padding:10px 14px;color:var(--g-base);border-bottom:1px solid rgba(201,168,76,0.25);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;background:rgba(0,5,20,0.6);font-weight:700;}
+.phi-table td{padding:10px 14px;border-bottom:1px solid rgba(30,50,100,0.25);font-family:'Share Tech Mono',monospace;font-size:15px;color:rgba(210,225,255,0.92);font-weight:500;}
+.phi-table tr:hover td{background:rgba(201,168,76,0.05);}
+.phi-table .base-row td{color:var(--g-hi);font-weight:700;background:rgba(201,168,76,0.06);font-size:15px;}
+.phi-table .step{color:rgba(210,140,255,0.95);}
+.phi-table .freq-val{color:#60c8ff;}
+.phi-table .mm-val{color:var(--g-hi);}
+.phi-table .match{color:#60ff80;font-weight:700;}
+.phi-table .copy-btn{padding:3px 9px;font-size:var(--text-xxs);color:rgba(201,168,76,0.7);background:transparent;border:1px solid rgba(201,168,76,0.25);border-radius:3px;cursor:pointer;font-family:'Exo 2',sans-serif;transition:all 0.15s;}
+.phi-table .copy-btn:hover{color:#e8c870;border-color:var(--g-base);}
+
+/* ── CANVAS ── */
+.cf{position:relative;border:2px solid var(--g-deep);border-radius:6px;background:linear-gradient(180deg,#060e20,#081228);overflow:hidden;margin:14px 0;box-shadow:inset 0 0 40px rgba(0,5,40,0.9),0 0 12px rgba(201,168,76,0.1);}
+.cf::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(30,70,160,0.1) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(30,70,160,0.1) 40px);pointer-events:none;z-index:1;}
+canvas{display:block;width:100%;position:relative;z-index:2;}
+.screw{position:absolute;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--g-hi) 0%,var(--g-base) 40%,var(--g-shad) 100%);box-shadow:0 0 6px rgba(206,163,93,0.6);z-index:10;}
+.screw::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(45deg);width:6px;height:1px;background:rgba(40,20,0,0.7);}
+.s-tl{top:-6px;left:-6px;}.s-tr{top:-6px;right:-6px;}.s-bl{bottom:-6px;left:-6px;}.s-br{bottom:-6px;right:-6px;}
+
+/* ── PRESET PILLS ── */
+.preset-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;}
+.preset-btn{padding:7px 15px;background:transparent;border:1px solid rgba(201,168,76,0.3);border-radius:20px;color:rgba(201,168,76,0.85);font-size:var(--text-xs);cursor:pointer;transition:all 0.12s;outline:none;}
+.preset-btn:hover{color:#e8c870;border-color:var(--g-base);}
+.preset-btn.sel{color:#e8c870;border-color:var(--g-base);background:rgba(201,168,76,0.08);}
+
+/* ── MODE TOGGLE ── */
+.mode-tog{display:inline-flex;border:1.5px solid var(--btn-border);border-radius:6px;overflow:hidden;margin-bottom:16px;}
+.mode-tog button{padding:9px 20px;font-size:var(--text-xs);font-weight:600;background:transparent;border:none;color:rgba(201,168,76,0.7);cursor:pointer;font-family:'Exo 2',sans-serif;transition:all 0.15s;border-right:1px solid var(--btn-border);}
+.mode-tog button:last-child{border-right:none;}
+.mode-tog button.on{background:rgba(201,168,76,0.1);color:#e8c870;box-shadow:inset 0 0 12px rgba(201,168,76,0.1);}
+
+/* ── INFO BOX ── */
+.info-box{background:rgba(201,168,76,0.06);border-left:3px solid var(--g-base);border-radius:0 4px 4px 0;padding:12px 16px;margin:14px 0;}
+.info-box .ib-title{font-size:var(--text-xxs);letter-spacing:1.5px;color:var(--g-base);text-transform:uppercase;margin-bottom:6px;font-weight:600;}
+.info-box p{font-size:var(--text-body);color:rgba(210,225,255,0.88);line-height:var(--lh);}
+
+/* ── STATUS ── */
+.status{font-size:var(--text-xs);color:rgba(100,180,255,0.85);font-family:'Share Tech Mono',monospace;margin-top:8px;min-height:16px;}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:12px;border-top:1px solid rgba(201,168,76,0.1);font-size:var(--text-xxs);letter-spacing:2px;color:rgba(178,147,107,0.55);background:rgba(0,0,0,0.25);}
+
+/* ── Info Panel System ── */
+.info-btn{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;border:1px solid rgba(201,168,76,0.45);color:rgba(201,168,76,0.75);font-size:var(--text-xxs);cursor:pointer;background:none;font-family:'Share Tech Mono',monospace;transition:border-color .2s,color .2s,box-shadow .2s;flex-shrink:0;vertical-align:middle;margin-left:5px;line-height:1;padding:0;}
+.info-btn:hover,.info-btn.open{border-color:#e8c98a;color:#e8c98a;box-shadow:0 0 8px rgba(232,201,138,0.3);}
+.info-panel{display:none;background:rgba(5,12,35,0.95);border:1px solid rgba(201,168,76,0.25);border-radius:5px;padding:14px 16px;margin-top:8px;font-family:'Share Tech Mono',monospace;font-size:var(--text-xs);line-height:var(--lh);color:rgba(224,214,190,0.92);}
+.info-panel.open{display:block;}
+.info-panel ol{margin:0;padding-left:18px;line-height:2;}
+
+/* ── MOBILE RESPONSIVE ── */
+@media(max-width:640px){
+  :root{--text-body:16px;--text-sm:14px;--text-xs:13px;--text-xxs:12px;--text-label:13px;}
+  body{padding:10px;}
+  .header{padding:14px 16px 12px;}
+  .content{padding:16px;}
+  .tab-row{overflow-x:auto;}
+}
+</style>
+</head>
+<body>
+<div class="panel">
+
+  <!-- HEADER -->
+  <div class="header">
+    <img class="logo-img" src="data:image/png;base64,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" alt="Allistar Center">
+    <div>
+      <div class="head-brand">Allistar Center</div>
+      <div class="head-sub">Phi-Ratio Geometry Calculator · Symmetric Field Physics</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:16px 28px;">
+    <button type="button" class="tab active" onclick="switchTab('geo')">Geometry</button>
+    <button type="button" class="tab" onclick="switchTab('freq')">Frequency</button>
+    <button type="button" class="tab" onclick="switchTab('cubit')">Royal Cubit</button>
+    <button type="button" class="tab" onclick="switchTab('resonant')">Resonant Freq</button>
+    <button type="button" class="tab" onclick="switchTab('geometry')">Sacred Geometry</button>
+    <button type="button" class="tab" onclick="switchTab('material')">Wavelength Matcher</button>
+    <button type="button" class="tab" onclick="switchTab('fractal')">Fractal Scaler</button>
+    <button type="button" class="tab" onclick="switchTab('platonic')">Platonic Solids</button>
+    <button type="button" class="tab" onclick="switchTab('pyramid')">Great Pyramid</button>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ GEOMETRY MODE ══ -->
+    <div class="pc active" id="tab-geo">
+      <div class="lbl" style="margin-top:0;">Input Dimension</div>
+      <div class="row">
+        <input type="number" id="geoBase" value="50" min="0.001" step="any" style="width:140px;" oninput="calcGeo()">
+        <div class="sw">
+          <select id="geoUnit" onchange="calcGeo()">
+            <option value="mm">mm</option>
+            <option value="cm">cm</option>
+            <option value="m">m</option>
+            <option value="in">inches</option>
+          </select>
+        </div>
+        <input type="number" id="geoSteps" value="12" min="4" max="40" step="1" 
+          style="width:100px;" oninput="calcGeo()" placeholder="Steps">
+        <span style="color:var(--g-base);font-size:16px;">steps</span>
+        <button type="button" class="btn primary" onclick="calcGeo()">▶ Calculate</button>
+      </div>
+
+      <div class="info-box">
+        <div class="ib-title">How to use</div>
+        <p>Enter any single dimension from your prototype — inner diameter, height, gap distance, coil radius, anything. The calculator builds the complete phi-ratio series in both directions. The BASE ROW (highlighted) is your input. Values above are φ× larger, values below are φ× smaller.</p>
+      </div>
+
+      <!-- VISUAL DIAGRAM -->
+      <div class="lbl">Geometric Diagram</div>
+      <div class="cf" style="height:280px;">
+        <div class="screw s-tl"></div><div class="screw s-tr"></div>
+        <div class="screw s-bl"></div><div class="screw s-br"></div>
+        <canvas id="geoCanvas" height="280"></canvas>
+      </div>
+
+      <!-- MODE: circles / rectangles / spiral -->
+      <div class="row" style="margin-bottom:12px;">
+        <div class="mode-tog">
+          <button type="button" id="mCircle" class="on" onclick="setGeoMode('circle',this)">Nested Circles</button>
+          <button type="button" id="mRect" onclick="setGeoMode('rect',this)">Rectangles</button>
+          <button type="button" id="mSpiral" onclick="setGeoMode('spiral',this)">Spiral</button>
+          <button type="button" id="mCone" onclick="setGeoMode('cone',this)">Cones</button>
+        </div>
+      </div>
+
+      <!-- PHI TABLE -->
+      <div class="lbl">Phi-Ratio Cascade Table</div>
+      <div style="overflow-x:auto;">
+        <table class="phi-table" id="geoTable">
+          <thead><tr><th>Step</th><th>Multiplier</th><th>Value (mm)</th><th>Value (input unit)</th><th>Ratio Check</th><th></th></tr></thead>
+          <tbody id="geoTbody"></tbody>
+        </table>
+      </div>
+      <div class="status" id="geoStatus"></div>
+    </div>
+
+    <!-- ══ FREQUENCY MODE ══ -->
+    <div class="pc" id="tab-freq">
+      <div class="lbl" style="margin-top:0;">Base Frequency</div>
+      <div class="row">
+        <input type="number" id="freqBase" value="7.83" min="0.001" step="any" style="width:160px;" oninput="calcFreq()">
+        <span style="color:var(--g-base);font-size:16px;font-weight:600;">Hz</span>
+        <input type="number" id="freqSteps" value="12" min="4" max="40" step="1"
+          style="width:100px;" oninput="calcFreq()" placeholder="Steps">
+        <span style="color:var(--g-base);font-size:16px;">steps</span>
+        <button type="button" class="btn primary" onclick="calcFreq()">▶ Calculate</button>
+      </div>
+
+      <!-- QUICK PRESETS -->
+      <div class="lbl">Quick Frequency Presets</div>
+      <div class="preset-row">
+        <button type="button" class="preset-btn" onclick="setFreqPreset(7.83,'Schumann Fund.')">7.83 Hz Schumann</button>
+        <button type="button" class="preset-btn" onclick="setFreqPreset(432,'432 Hz')">432 Hz</button>
+        <button type="button" class="preset-btn" onclick="setFreqPreset(528,'528 Hz DNA')">528 Hz</button>
+        <button type="button" class="preset-btn" onclick="setFreqPreset(4500000,'4.5 MHz Antenna')">4.5 MHz</button>
+        <button type="button" class="preset-btn" onclick="setFreqPreset(600000,'600kHz Cones')">600 kHz</button>
+        <button type="button" class="preset-btn" onclick="setFreqPreset(277,'277 Hz C#')">277 Hz C#</button>
+        <button type="button" class="preset-btn" onclick="setFreqPreset(333000,'333 kHz')">333 kHz</button>
+      </div>
+
+      <div class="info-box">
+        <div class="ib-title">Frequency Cascade</div>
+        <p>Each frequency in the phi series is φ × the previous. Unlike harmonic series (integer multiples), phi-ratio frequencies never create destructive interference with each other — making them ideal for energy accumulation in resonant structures. Geometric dimensions that match these frequencies will naturally couple to them.</p>
+      </div>
+
+      <!-- FREQ TABLE -->
+      <div class="lbl">Phi-Ratio Frequency Cascade</div>
+      <div style="overflow-x:auto;">
+        <table class="phi-table" id="freqTable">
+          <thead><tr><th>Step</th><th>Multiplier</th><th>Frequency</th><th>Period (µs)</th><th>Wavelength (m)</th><th>Notes</th></tr></thead>
+          <tbody id="freqTbody"></tbody>
+        </table>
+      </div>
+
+      <!-- FREQ DIAGRAM -->
+      <div class="lbl">Frequency Spectrum Diagram</div>
+      <div class="cf">
+        <div class="screw s-tl"></div><div class="screw s-tr"></div>
+        <div class="screw s-bl"></div><div class="screw s-br"></div>
+        <canvas id="freqCanvas" height="180"></canvas>
+      </div>
+      <div class="status" id="freqStatus"></div>
+    </div>
+
+    <!-- ══ ROYAL CUBIT ══ -->
+    <div class="pc" id="tab-cubit">
+      <div class="info-box" style="margin-top:0;">
+        <div class="ib-title">The Egyptian Royal Cubit</div>
+        <p>The Royal Cubit = 523.6 mm — derived from the relationship between the meter and π. Your quartz crystal design of 70mm total height maps precisely to 70/523.6 = 0.1337 cubits = 1/(7.47) — remarkably close to 1/φ⁴ = 0.1459. The Great Pyramid's base is 440 cubits and height is 280 cubits — ratio 280/440 = 0.6364 ≈ 1/φ × 1.03. These are not coincidences — they encode phi-ratio geometry in architectural scale.</p>
+      </div>
+
+      <div class="lbl">Cubit Converter</div>
+      <div class="row">
+        <input type="number" id="cubitInput" value="70" step="any" style="width:140px;" oninput="calcCubit()">
+        <div class="sw">
+          <select id="cubitFrom" onchange="calcCubit()">
+            <option value="mm">mm → Cubits</option>
+            <option value="cubit">Cubits → mm</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="sg" id="cubitStats" style="grid-template-columns:repeat(3,1fr);"></div>
+
+      <div class="lbl">Royal Cubit Phi Cascade</div>
+      <div style="overflow-x:auto;">
+        <table class="phi-table" id="cubitTable">
+          <thead><tr><th>Step</th><th>Multiplier</th><th>mm</th><th>Royal Cubits</th><th>Significance</th></tr></thead>
+          <tbody id="cubitTbody"></tbody>
+        </table>
+      </div>
+
+      <!-- CUBIT DIAGRAM -->
+      <div class="cf" style="margin-top:14px;">
+        <div class="screw s-tl"></div><div class="screw s-tr"></div>
+        <div class="screw s-bl"></div><div class="screw s-br"></div>
+        <canvas id="cubitCanvas" height="240"></canvas>
+      </div>
+    </div>
+
+    
+<!-- ══ RESONANT FREQUENCY CALCULATOR ══ -->
+<div class="pc" id="tab-resonant">
+  <div class="lbl" style="margin-top:0;">LC Circuit — Coil Parameters</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+    <div>
+      <div class="lbl" style="margin-top:0;">Coil Diameter (mm)</div>
+      <input type="number" id="r-diam" value="50" min="1" step="any" style="width:100%;" oninput="calcResonant()">
+    </div>
+    <div>
+      <div class="lbl" style="margin-top:0;">Wire Gauge (mm)</div>
+      <input type="number" id="r-wire" value="1.5" min="0.1" step="any" style="width:100%;" oninput="calcResonant()">
+    </div>
+    <div>
+      <div class="lbl" style="margin-top:0;">Number of Turns</div>
+      <input type="number" id="r-turns" value="10" min="1" step="1" style="width:100%;" oninput="calcResonant()">
+    </div>
+    <div>
+      <div class="lbl" style="margin-top:0;">Capacitance (pF)</div>
+      <input type="number" id="r-cap" value="100" min="0.1" step="any" style="width:100%;" oninput="calcResonant()">
+    </div>
+    <div>
+      <div class="lbl" style="margin-top:0;">Core Material</div>
+      <div class="sw" style="width:100%;">
+        <select id="r-core" onchange="calcResonant()" style="width:100%;">
+          <option value="1">Air Core (mu=1)</option>
+          <option value="2000">Ferrite Core (mu~2000)</option>
+          <option value="5000">High-mu Ferrite (mu~5000)</option>
+          <option value="200">Iron Powder Core (mu~200)</option>
+          <option value="4000">MnZn Ferrite (mu~4000)</option>
+          <option value="700">NiZn Ferrite (mu~700)</option>
+          <option value="6000">Silicon Steel (mu~6000)</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <div class="lbl" style="margin-top:0;">Coil Length (mm)</div>
+      <input type="number" id="r-length" value="15" min="1" step="any" style="width:100%;" oninput="calcResonant()">
+      <div style="font-size:16px;color:rgba(201,168,76,0.4);margin-top:3px;">Leave 0 for auto (N x wire dia)</div>
+    </div>
+  </div>
+  <div id="coreInfo" style="background:rgba(0,8,30,0.5);border:1px solid rgba(201,168,76,0.15);border-radius:5px;padding:8px 12px;margin-bottom:10px;font-size:16px;color:rgba(200,220,255,0.88);font-family:'Share Tech Mono',monospace;"></div>
+  <div class="row">
+    <button type="button" class="btn primary" onclick="calcResonant()">&#9654; Calculate Resonance</button>
+  </div>
+  <div class="sg" style="grid-template-columns:repeat(3,1fr);margin-top:14px;">
+    <div class="sc"><div class="sv" id="r-freq">-</div><div class="sl">Resonant Freq</div></div>
+    <div class="sc"><div class="sv" id="r-ind">-</div><div class="sl">Inductance (uH)</div></div>
+    <div class="sc"><div class="sv" id="r-wave">-</div><div class="sl">Wavelength (m)</div></div>
+  </div>
+  <div class="info-box">
+    <div class="ib-title">Phi-Ratio Frequency Cascade from Resonant Frequency</div>
+    <p>Once resonant frequency is calculated, the full phi cascade is generated automatically below. Frequencies where the phi series aligns with Schumann resonances are highlighted.</p>
+  </div>
+  <div class="lbl">Phi Cascade from Resonant Frequency</div>
+  <div style="overflow-x:auto;">
+    <table class="phi-table" id="resonantTable">
+      <thead><tr><th>Step</th><th>Frequency</th><th>Quarter-wave (m)</th><th>Half-wave (m)</th><th>Notes</th></tr></thead>
+      <tbody id="resonantTbody"></tbody>
+    </table>
+  </div>
+  <div class="lbl">Resonance Spectrum</div>
+  <div class="cf">
+    <div class="screw s-tl"></div><div class="screw s-tr"></div>
+    <div class="screw s-bl"></div><div class="screw s-br"></div>
+    <canvas id="resonantCanvas" height="160"></canvas>
+  </div>
+  <div class="row" style="margin-top:12px;">
+    <button type="button" class="btn primary" onclick="exportResonantPDF()">&#8659; Export PDF</button>
+  </div>
+  <div class="status" id="resonantStatus"></div>
+</div>
+
+<!-- ══ SACRED GEOMETRY ══ -->
+<div class="pc" id="tab-geometry">
+  <div class="lbl" style="margin-top:0;">Select Sacred Form</div>
+  <div class="preset-row" id="geoFormBtns">
+    <button type="button" class="preset-btn sel" onclick="loadSacredForm('flower',this)">Flower of Life</button>
+    <button type="button" class="preset-btn" onclick="loadSacredForm('metatron',this)">Metatron's Cube</button>
+    <button type="button" class="preset-btn" onclick="loadSacredForm('vesica',this)">Vesica Piscis</button>
+    <button type="button" class="preset-btn" onclick="loadSacredForm('seed',this)">Seed of Life</button>
+    <button type="button" class="preset-btn" onclick="loadSacredForm('yantra',this)">Sri Yantra</button>
+    <button type="button" class="preset-btn" onclick="loadSacredForm('pentagon',this)">Pentagon / Pentagram</button>
+  </div>
+  <div class="row">
+    <span class="ctrl-lbl">Scale (mm)</span>
+    <input type="number" id="sg-scale" value="200" min="10" step="10" style="width:120px;" oninput="drawSacredForm()">
+  </div>
+  <div class="cf">
+    <div class="screw s-tl"></div><div class="screw s-tr"></div>
+    <div class="screw s-bl"></div><div class="screw s-br"></div>
+    <canvas id="sacredCanvas" height="320"></canvas>
+  </div>
+  <div id="sacredDesc" style="background:rgba(0,8,30,0.5);border:1px solid rgba(201,168,76,0.15);border-radius:6px;padding:14px;margin-top:12px;font-size:16px;color:rgba(200,220,255,0.88);line-height:1.8;"></div>
+  <div class="lbl">Key Ratios</div>
+  <div style="overflow-x:auto;">
+    <table class="phi-table" id="sacredTable">
+      <thead><tr><th>Dimension</th><th>Ratio</th><th>Value (mm)</th><th>Significance</th></tr></thead>
+      <tbody id="sacredTbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ WAVELENGTH MATCHER ══ -->
+<div class="pc" id="tab-material">
+  <div class="lbl" style="margin-top:0;">Target Frequency</div>
+  <div class="row">
+    <input type="number" id="wl-freq" value="4500000" min="1" step="any" style="width:180px;" oninput="calcWavelength()">
+    <span style="color:var(--g-base);font-size:16px;font-weight:600;">Hz</span>
+    <div class="sw">
+      <select id="wl-medium" onchange="calcWavelength()">
+        <option value="1">Free space (c)</option>
+        <option value="0.95">Copper wire (0.95c)</option>
+        <option value="0.66">Coax cable (0.66c)</option>
+        <option value="0.5">FR4 PCB (0.5c)</option>
+      </select>
+    </div>
+  </div>
+  <div class="preset-row" style="margin-bottom:12px;">
+    <button type="button" class="preset-btn" onclick="setWlPreset(7.83)">7.83Hz Schumann</button>
+    <button type="button" class="preset-btn" onclick="setWlPreset(4500000)">4.5MHz Antenna</button>
+    <button type="button" class="preset-btn" onclick="setWlPreset(600000)">600kHz Cones</button>
+    <button type="button" class="preset-btn" onclick="setWlPreset(2450000000)">2.45GHz WiFi</button>
+    <button type="button" class="preset-btn" onclick="setWlPreset(528)">528Hz</button>
+  </div>
+  <div class="sg" style="grid-template-columns:repeat(2,1fr);">
+    <div class="sc"><div class="sv" id="wl-full">-</div><div class="sl">Full Wavelength</div></div>
+    <div class="sc"><div class="sv" id="wl-half">-</div><div class="sl">Half Wavelength</div></div>
+    <div class="sc"><div class="sv" id="wl-quarter">-</div><div class="sl">Quarter Wavelength</div></div>
+    <div class="sc"><div class="sv" id="wl-eighth">-</div><div class="sl">Eighth Wavelength</div></div>
+  </div>
+  <div class="info-box">
+    <div class="ib-title">Phi-Ratio Scaled Antenna Lengths</div>
+    <p>Each row below shows a phi-ratio scaled version of the quarter wavelength. Antennas cut to these lengths will resonate at phi-related frequencies — giving you a natural harmonic family of resonances from a single geometric series.</p>
+  </div>
+  <div class="lbl">Phi-Ratio Antenna Length Series</div>
+  <div style="overflow-x:auto;">
+    <table class="phi-table" id="wavelengthTable">
+      <thead><tr><th>Step</th><th>Length</th><th>Resonates at</th><th>Cut from copper</th><th>Notes</th></tr></thead>
+      <tbody id="wavelengthTbody"></tbody>
+    </table>
+  </div>
+  <div class="cf" style="margin-top:14px;">
+    <div class="screw s-tl"></div><div class="screw s-tr"></div>
+    <div class="screw s-bl"></div><div class="screw s-br"></div>
+    <canvas id="wavelengthCanvas" height="160"></canvas>
+  </div>
+  <div class="row" style="margin-top:12px;">
+    <button type="button" class="btn primary" onclick="exportWavelengthPDF()">&#8659; Export PDF</button>
+  </div>
+</div>
+
+<!-- ══ FRACTAL SCALER ══ -->
+<div class="pc" id="tab-fractal">
+  <div class="lbl" style="margin-top:0;">Fractal Type</div>
+  <div class="preset-row" id="fractalTypeBtns">
+    <button type="button" class="preset-btn sel" onclick="setFractalType('sierpinski',this)">Sierpinski Gasket</button>
+    <button type="button" class="preset-btn" onclick="setFractalType('carpet',this)">Sierpinski Carpet</button>
+    <button type="button" class="preset-btn" onclick="setFractalType('koch',this)">Koch Snowflake</button>
+    <button type="button" class="preset-btn" onclick="setFractalType('mandelbrot',this)">Mandelbrot</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
+    <div>
+      <div class="lbl" style="margin-top:0;">Iterations (0-8)</div>
+      <input type="range" id="frac-iter" min="0" max="8" step="1" value="3" 
+        style="width:100%;margin-top:8px;" oninput="document.getElementById('frac-iter-val').textContent=this.value;drawFractal()">
+      <div style="display:flex;justify-content:space-between;margin-top:4px;">
+        <span style="font-size:16px;color:rgba(201,168,76,0.5);">0</span>
+        <span id="frac-iter-val" style="font-size:16px;color:var(--g-hi);font-family:'Share Tech Mono',monospace;font-weight:600;">3</span>
+        <span style="font-size:16px;color:rgba(201,168,76,0.5);">8</span>
+      </div>
+    </div>
+    <div>
+      <div class="lbl" style="margin-top:0;">Physical Size (mm)</div>
+      <input type="number" id="frac-size" value="500" min="10" step="10" style="width:100%;margin-top:4px;" oninput="drawFractal()">
+    </div>
+    <div>
+      <div class="lbl" style="margin-top:0;">Phi Spiral Overlay</div>
+      <div style="margin-top:8px;">
+        <button type="button" id="phiOverlayBtn" class="btn" onclick="togglePhiOverlay()" style="width:100%;padding:8px;">OFF</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sg" style="grid-template-columns:repeat(4,1fr);">
+    <div class="sc"><div class="sv" id="fr-elements">-</div><div class="sl">Elements</div></div>
+    <div class="sc"><div class="sv" id="fr-dimension">-</div><div class="sl">Fractal Dim</div></div>
+    <div class="sc"><div class="sv" id="fr-scale">-</div><div class="sl">Element Size (mm)</div></div>
+    <div class="sc"><div class="sv" id="fr-reduction">-</div><div class="sl">Scale Ratio</div></div>
+  </div>
+
+  <div class="cf" style="margin-top:14px;">
+    <div class="screw s-tl"></div><div class="screw s-tr"></div>
+    <div class="screw s-bl"></div><div class="screw s-br"></div>
+    <canvas id="fractalCanvas" height="360"></canvas>
+  </div>
+
+  <div class="row" style="margin-top:12px;">
+    <button type="button" class="btn primary" onclick="exportFractalSVG()">&#8659; Export SVG</button>
+    <button type="button" class="btn" onclick="exportFractalPDF()">&#8659; Export PDF</button>
+  </div>
+
+  <div class="lbl">Iteration Dimension Table</div>
+  <div style="overflow-x:auto;">
+    <table class="phi-table" id="fractalTable">
+      <thead><tr><th>Iteration</th><th>Elements</th><th>Element Size (mm)</th><th>Total Edge Length</th><th>Phi Aligned?</th></tr></thead>
+      <tbody id="fractalTbody"></tbody>
+    </table>
+  </div>
+  <div class="status" id="fractalStatus"></div>
+</div>
+
+<!-- ══ EXPORT ══ -->
+    <div class="pc" id="tab-platonic">
+  <div class="lbl" style="margin-top:0;">Select Platonic Solid</div>
+  <div class="preset-row" id="platonicBtns">
+    <button type="button" class="preset-btn sel" onclick="loadPlatonic('tetra',this)">Tetrahedron</button>
+    <button type="button" class="preset-btn" onclick="loadPlatonic('cube',this)">Cube</button>
+    <button type="button" class="preset-btn" onclick="loadPlatonic('octa',this)">Octahedron</button>
+    <button type="button" class="preset-btn" onclick="loadPlatonic('dodeca',this)">Dodecahedron</button>
+    <button type="button" class="preset-btn" onclick="loadPlatonic('icosa',this)">Icosahedron</button>
+  </div>
+  <!-- VIEW MODE + CONTROLS -->
+  <div class="row" style="margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+    <span class="ctrl-lbl">Edge (mm)</span>
+    <input type="number" id="plat-edge" value="100" min="1" step="1" style="width:100px;" oninput="updatePlatonic()">
+    <div class="mode-tog">
+      <button type="button" id="modeSolid" class="on" onclick="setRenderMode('solid',this)">Solid</button>
+      <button type="button" id="modeWire" onclick="setRenderMode('wire',this)">Wireframe</button>
+      <button type="button" id="modeBoth" onclick="setRenderMode('both',this)">Both</button>
+    </div>
+    <button type="button" class="btn" onclick="rotatePlatonic(-1)">&#9664;</button>
+    <button type="button" class="btn" onclick="rotatePlatonic(1)">&#9654;</button>
+    <button type="button" id="animBtn" class="btn" onclick="togglePlatonicAnim()">&#9654; Animate</button>
+  </div>
+  <!-- INFO BOX -->
+  <div id="platonicDesc" style="background:rgba(0,8,30,0.5);border:1px solid rgba(201,168,76,0.15);border-radius:6px;padding:10px 14px;margin-bottom:10px;font-size:16px;color:rgba(200,220,255,0.88);line-height:1.75;"></div>
+  <!-- 3D CANVAS -->
+  <div class="cf">
+    <div class="screw s-tl"></div><div class="screw s-tr"></div>
+    <div class="screw s-bl"></div><div class="screw s-br"></div>
+    <canvas id="platonicCanvas" height="360"></canvas>
+  </div>
+  <!-- STATS -->
+  <div class="sg" style="grid-template-columns:repeat(5,1fr);margin-top:12px;">
+    <div class="sc"><div class="sv" id="pl-faces">-</div><div class="sl">Faces</div></div>
+    <div class="sc"><div class="sv" id="pl-vertices">-</div><div class="sl">Vertices</div></div>
+    <div class="sc"><div class="sv" id="pl-edges">-</div><div class="sl">Edges</div></div>
+    <div class="sc"><div class="sv" id="pl-inradius">-</div><div class="sl">Inradius (mm)</div></div>
+    <div class="sc"><div class="sv" id="pl-circumradius">-</div><div class="sl">Circumradius (mm)</div></div>
+  </div>
+  <!-- DIMENSION TABLE -->
+  <div class="lbl">Phi-Ratio Dimension Analysis</div>
+  <div style="overflow-x:auto;">
+    <table class="phi-table" id="platonicTable">
+      <thead><tr><th>Dimension</th><th>Formula</th><th>Value (mm)</th><th>Phi Relation</th></tr></thead>
+      <tbody id="platonicTbody"></tbody>
+    </table>
+  </div>
+</div>
+
+  
+<!-- ══ GREAT PYRAMID ══ -->
+<div class="pc" id="tab-pyramid">
+
+  <div class="info-box" style="margin-top:0;">
+    <div class="ib-title">The Great Pyramid of Giza — Encoded Mathematics</div>
+    <p>The Great Pyramid encodes both <strong style="color:var(--g-hi);">phi</strong> and <strong style="color:var(--g-hi);">pi</strong> in its proportions simultaneously. The apothem (slant height of face) divided by half the base = phi = 1.618. The perimeter divided by twice the height = pi = 3.14159. It also encodes sqrt(phi) as the height/half-base ratio. Original dimensions: base 230.33m (440 cubits), height 146.5m (280 cubits).</p>
+  </div>
+
+  <div class="lbl">Scale Factor</div>
+  <div class="row" style="flex-wrap:wrap;gap:10px;">
+    <div class="sw">
+      <select id="pyr-mode" onchange="calcPyramid()" style="width:auto;">
+        <option value="scale">Scale factor (×)</option>
+        <option value="base">Set base length</option>
+        <option value="height">Set height</option>
+        <option value="model">Model size</option>
+      </select>
+    </div>
+    <input type="number" id="pyr-value" value="1" min="0.0001" step="any" style="width:140px;" oninput="calcPyramid()">
+    <div class="sw">
+      <select id="pyr-unit" onchange="calcPyramid()" style="width:auto;">
+        <option value="m">Metres</option>
+        <option value="mm" selected>Millimetres</option>
+        <option value="cm">Centimetres</option>
+        <option value="ft">Feet</option>
+        <option value="cubit">Royal Cubits</option>
+      </select>
+    </div>
+    <button type="button" class="btn primary" onclick="calcPyramid()">&#9654; Calculate</button>
+  </div>
+
+  <!-- QUICK SCALE PRESETS -->
+  <div class="lbl">Quick Presets</div>
+  <div class="preset-row">
+    <button type="button" class="preset-btn" onclick="setPyrPreset(1,'scale','m')">Original (1:1)</button>
+    <button type="button" class="preset-btn" onclick="setPyrPreset(0.1,'scale','m')">1:10 scale</button>
+    <button type="button" class="preset-btn" onclick="setPyrPreset(0.01,'scale','m')">1:100 scale</button>
+    <button type="button" class="preset-btn" onclick="setPyrPreset(500,'base','mm')">500mm base</button>
+    <button type="button" class="preset-btn" onclick="setPyrPreset(200,'base','mm')">200mm base</button>
+    
+    <button type="button" class="preset-btn" onclick="setPyrPreset(300,'height','mm')">300mm height</button>
+    <button type="button" class="preset-btn" onclick="setPyrPreset(1,'base','cubit')">1 cubit base</button>
+  </div>
+
+  <!-- STATS CARDS -->
+  <div class="sg" style="grid-template-columns:repeat(4,1fr);margin-top:12px;">
+    <div class="sc"><div class="sv" id="pyr-base">-</div><div class="sl">Base Length</div></div>
+    <div class="sc"><div class="sv" id="pyr-height">-</div><div class="sl">Height</div></div>
+    <div class="sc"><div class="sv" id="pyr-apothem">-</div><div class="sl">Apothem (face)</div></div>
+    <div class="sc"><div class="sv" id="pyr-edge">-</div><div class="sl">Edge (apex-corner)</div></div>
+  </div>
+  <div class="sg" style="grid-template-columns:repeat(4,1fr);">
+    <div class="sc"><div class="sv" id="pyr-angle">51.83°</div><div class="sl">Slope Angle</div></div>
+    <div class="sc"><div class="sv" id="pyr-phi">1.6180</div><div class="sl">Apothem/Half-base</div></div>
+    <div class="sc"><div class="sv" id="pyr-pi">3.1416</div><div class="sl">Perim/(2×Height)</div></div>
+    <div class="sc"><div class="sv" id="pyr-cubit">-</div><div class="sl">Base in Cubits</div></div>
+  </div>
+
+  <!-- 3D DIAGRAM -->
+  <div class="lbl">3D Pyramid Diagram</div>
+  <div class="cf">
+    <div class="screw s-tl"></div><div class="screw s-tr"></div>
+    <div class="screw s-bl"></div><div class="screw s-br"></div>
+    <canvas id="pyramidCanvas" height="300"></canvas>
+  </div>
+
+  <!-- DIMENSION TABLE -->
+  <div class="lbl">Complete Dimension Table</div>
+  <div style="overflow-x:auto;">
+    <table class="phi-table" id="pyramidTable">
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th>Formula / Ratio</th>
+          <th>Value (mm)</th>
+          <th>Value (m)</th>
+          <th>Royal Cubits</th>
+          <th>Phi / Pi Relation</th>
+        </tr>
+      </thead>
+      <tbody id="pyramidTbody"></tbody>
+    </table>
+  </div>
+
+  <!-- PHI CASCADE FROM PYRAMID -->
+  <div class="lbl">Phi Cascade from Pyramid Height</div>
+  <div style="overflow-x:auto;">
+    <table class="phi-table" id="pyrPhiTable">
+      <thead><tr><th>Step</th><th>Multiplier</th><th>Value (mm)</th><th>Significance</th></tr></thead>
+      <tbody id="pyrPhiTbody"></tbody>
+    </table>
+  </div>
+
+  <!-- EXPORT -->
+  <div class="row" style="margin-top:14px;">
+    <button type="button" class="btn primary" onclick="exportPyramidPDF()">&#8659; Export Spec Sheet PDF</button>
+    <button type="button" class="btn" onclick="copyPyramidTable()">&#8998; Copy Table</button>
+  </div>
+  <div class="status" id="pyrStatus"></div>
+
+</div>
+
+</div><!-- /content -->
+  <div class="footer">Allistar Center · Phi-Ratio Geometry Calculator · Resonance Is the Foundation</div>
+</div><!-- /panel -->
+
+<script>
+const PHI = 1.6180339887;
+const ROYAL_CUBIT = 523.6; // mm
+
+let geoMode = 'circle';
+let currentGeoData = [];
+let currentFreqData = [];
+let currentProtoData = null;
+
+// ═══ TAB ═══
+// switchTab defined below (complete version handles all 9 tabs)
+
+// ═══ UNIT CONVERT ═══
+function toMM(val, unit){
+  if(unit==='mm') return val;
+  if(unit==='cm') return val*10;
+  if(unit==='m') return val*1000;
+  if(unit==='in') return val*25.4;
+  return val;
+}
+function fromMM(val, unit){
+  if(unit==='mm') return val;
+  if(unit==='cm') return val/10;
+  if(unit==='m') return val/1000;
+  if(unit==='in') return val/25.4;
+  return val;
+}
+
+// ═══ GEOMETRY CALC ═══
+function calcGeo(){
+  const raw = parseFloat(document.getElementById('geoBase').value)||50;
+  const unit = document.getElementById('geoUnit').value;
+  const steps = parseInt(document.getElementById('geoSteps').value)||12;
+  const baseMM = toMM(raw, unit);
+  const half = Math.floor(steps/2);
+  const rows = [];
+  for(let n = -half; n <= half; n++){
+    const mult = Math.pow(PHI, n);
+    const valMM = baseMM * mult;
+    const valUnit = fromMM(valMM, unit);
+    rows.push({n, mult, valMM, valUnit, isBase: n===0});
+  }
+  currentGeoData = rows;
+  // render table
+  const tbody = document.getElementById('geoTbody');
+  tbody.innerHTML = rows.map(r=>`
+    <tr class="${r.isBase?'base-row':''}">
+      <td class="step">φ^${r.n}</td>
+      <td>${r.mult.toFixed(6)}</td>
+      <td class="mm-val">${r.valMM.toFixed(4)}</td>
+      <td class="mm-val">${r.valUnit.toFixed(4)} ${unit}</td>
+      <td>${r.isBase?'<span style="color:var(--g-hi)">◀ BASE</span>':'φ × '+(r.n>0?rows[rows.indexOf(r)-1].valMM.toFixed(2):'...')}</td>
+      <td><button type="button" class="copy-btn" onclick="copyVal('${r.valMM.toFixed(4)}')">Copy</button></td>
+    </tr>`).join('');
+  drawGeoCanvas(baseMM, unit);
+  document.getElementById('geoStatus').textContent = 'Base: '+baseMM.toFixed(3)+'mm  |  φ = '+PHI+'  |  '+rows.length+' steps generated';
+}
+
+function setGeoMode(mode, btn){
+  geoMode = mode;
+  document.querySelectorAll('.mode-tog button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  calcGeo();
+}
+
+// ═══ GEO CANVAS ═══
+function drawGeoCanvas(baseMM, unit){
+  const canvas = document.getElementById('geoCanvas');
+  const W = canvas.offsetWidth||920; canvas.width=W; canvas.height=280;
+  const ctx = canvas.getContext('2d'); ctx.clearRect(0,0,W,280);
+  const cx=W/2, cy=140;
+  const maxR = Math.min(cx,cy)*0.88;
+  const numRings = 7;
+  // compute radii as phi cascade normalised to maxR
+  const radii = [];
+  for(let i=0;i<numRings;i++) radii.push(maxR / Math.pow(PHI, i));
+
+  if(geoMode==='circle'){
+    radii.forEach((r,i)=>{
+      const alpha = 0.7 - i*0.08;
+      ctx.strokeStyle = i===0?`rgba(238,212,163,${alpha})`:`rgba(201,168,76,${alpha*0.8})`;
+      ctx.lineWidth = i===0?2:1;
+      ctx.setLineDash(i===0?[]:[4,3]);
+      ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+      ctx.setLineDash([]);
+      // label
+      const labelMM = baseMM * Math.pow(PHI, i);
+      ctx.fillStyle = i===0?'rgba(238,212,163,0.9)':'rgba(201,168,76,0.6)';
+      ctx.font = i===0?'bold 11px Share Tech Mono':'10px Share Tech Mono';
+      const lx = cx + r*Math.cos(-Math.PI/6);
+      const ly = cy + r*Math.sin(-Math.PI/6);
+      ctx.fillText(labelMM.toFixed(1)+'mm', lx+4, ly);
+    });
+    // center dot
+    ctx.fillStyle='rgba(96,200,255,0.8)';
+    ctx.beginPath();ctx.arc(cx,cy,3,0,Math.PI*2);ctx.fill();
+  }
+  else if(geoMode==='rect'){
+    let w=maxR*1.6, h=maxR;
+    for(let i=0;i<numRings;i++){
+      const alpha=0.7-i*0.08;
+      ctx.strokeStyle=i===0?`rgba(238,212,163,${alpha})`:`rgba(201,168,76,${alpha*0.7})`;
+      ctx.lineWidth=i===0?2:1;
+      ctx.strokeRect(cx-w/2, cy-h/2, w, h);
+      ctx.fillStyle=i===0?'rgba(238,212,163,0.9)':'rgba(201,168,76,0.55)';
+      ctx.font='9px Share Tech Mono';
+      const labelMM=baseMM*Math.pow(PHI,i);
+      ctx.fillText(labelMM.toFixed(1), cx-w/2+4, cy-h/2+12);
+      w/=PHI; h/=PHI;
+    }
+  }
+  else if(geoMode==='spiral'){
+    ctx.strokeStyle='rgba(201,168,76,0.8)'; ctx.lineWidth=1.5;
+    ctx.shadowColor='rgba(201,168,76,0.4)'; ctx.shadowBlur=6;
+    ctx.beginPath();
+    for(let angle=0; angle<6*Math.PI; angle+=0.05){
+      const r2 = (maxR/8)*Math.pow(PHI, angle/(Math.PI));
+      const x=cx+r2*Math.cos(angle), y=cy+r2*Math.sin(angle);
+      angle===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke(); ctx.shadowBlur=0;
+    // phi markers
+    for(let n=0;n<6;n++){
+      const angle=n*Math.PI/2;
+      const r2=(maxR/8)*Math.pow(PHI,angle/Math.PI);
+      ctx.fillStyle='rgba(238,212,163,0.8)'; ctx.font='10px Share Tech Mono';
+      ctx.fillText('φ^'+n, cx+r2*Math.cos(angle)+4, cy+r2*Math.sin(angle));
+    }
+  }
+  else if(geoMode==='cone'){
+    const coneH=maxR*1.2;
+    for(let i=0;i<5;i++){
+      const r2=radii[i]*0.6;
+      const alpha=0.7-i*0.1;
+      ctx.strokeStyle=i===0?`rgba(238,212,163,${alpha})`:`rgba(201,168,76,${alpha*0.8})`;
+      ctx.lineWidth=i===0?2:1;
+      ctx.beginPath();
+      ctx.moveTo(cx,cy-coneH/2+i*20);
+      ctx.lineTo(cx-r2,cy+coneH/2-i*20);
+      ctx.lineTo(cx+r2,cy+coneH/2-i*20);
+      ctx.closePath(); ctx.stroke();
+      ctx.fillStyle='rgba(201,168,76,0.55)'; ctx.font='9px Share Tech Mono';
+      const labelMM=baseMM*Math.pow(PHI,i);
+      ctx.fillText(labelMM.toFixed(1)+'mm', cx+r2+6, cy+coneH/2-i*20);
+    }
+  }
+  // axis label
+  ctx.fillStyle='rgba(201,168,76,0.3)'; ctx.font='9px Share Tech Mono';
+  ctx.fillText('Base: '+baseMM.toFixed(2)+'mm  |  φ = 1.618', 8, 16);
+}
+
+// ═══ FREQUENCY CALC ═══
+function calcFreq(){
+  const base = parseFloat(document.getElementById('freqBase').value)||7.83;
+  const steps = parseInt(document.getElementById('freqSteps').value)||12;
+  const half = Math.floor(steps/2);
+  const KNOWN = {7.83:'Schumann 1',14.3:'Schumann 2',20.8:'Schumann 3',432:'Concert A',528:'DNA / Love',40:'Gamma brain',8:'Alpha brain',4:'Theta brain',277:'C# note',333:'Sacred 333',3000000:'3 MHz',4500000:'4.5 MHz Antenna',600000:'600kHz Cones'};
+  const rows=[];
+  for(let n=-half;n<=half;n++){
+    const mult=Math.pow(PHI,n);
+    const freq=base*mult;
+    const period=freq>0?1/freq*1e6:0;
+    const wavelength=freq>0?3e8/freq:0;
+    const freqStr=freq>=1e6?(freq/1e6).toFixed(4)+' MHz':freq>=1e3?(freq/1e3).toFixed(4)+' kHz':freq.toFixed(4)+' Hz';
+    let note='';
+    Object.entries(KNOWN).forEach(([k,v])=>{if(Math.abs(freq-parseFloat(k))/parseFloat(k)<0.02) note=v;});
+    rows.push({n,mult,freq,period,wavelength,freqStr,note,isBase:n===0});
+  }
+  currentFreqData=rows;
+  const tbody=document.getElementById('freqTbody');
+  tbody.innerHTML=rows.map(r=>`
+    <tr class="${r.isBase?'base-row':''}">
+      <td class="step">φ^${r.n}</td>
+      <td>${r.mult.toFixed(6)}</td>
+      <td class="freq-val">${r.freqStr}</td>
+      <td>${r.period<1000?r.period.toFixed(3):r.period.toFixed(0)} µs</td>
+      <td>${r.wavelength>1?r.wavelength.toFixed(3)+' m':r.wavelength<0.001?(r.wavelength*1000).toFixed(2)+' mm':(r.wavelength*100).toFixed(2)+' cm'}</td>
+      <td style="color:${r.note?'#60ff80':'rgba(200,220,255,0.4)'};">${r.note||''}</td>
+    </tr>`).join('');
+  drawFreqCanvas(rows);
+  document.getElementById('freqStatus').textContent='Base: '+base+' Hz  |  '+rows.length+' phi-ratio steps';
+}
+
+function setFreqPreset(freq, label){
+  document.getElementById('freqBase').value=freq;
+  calcFreq();
+  document.getElementById('freqStatus').textContent='Preset loaded: '+label;
+}
+
+function drawFreqCanvas(rows){
+  const canvas=document.getElementById('freqCanvas');
+  const W=canvas.offsetWidth||920; canvas.width=W; canvas.height=180;
+  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,180);
+  const pad=28,h=180-pad*2;
+  // grid
+  ctx.strokeStyle='rgba(30,70,160,0.2)'; ctx.lineWidth=0.5;
+  for(let g=0;g<=4;g++){const y=pad+g/4*h;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(W-pad,y);ctx.stroke();}
+  const visRows=rows.filter(r=>r.freq>0);
+  if(!visRows.length) return;
+  const minF=Math.min(...visRows.map(r=>r.freq));
+  const maxF=Math.max(...visRows.map(r=>r.freq));
+  const logMin=Math.log10(minF), logMax=Math.log10(maxF), logRange=logMax-logMin||1;
+  visRows.forEach(r=>{
+    const x=pad+(Math.log10(r.freq)-logMin)/logRange*(W-pad*2);
+    const barH=r.isBase?h*0.75:h*0.4;
+    const alpha=r.isBase?1:0.55;
+    ctx.fillStyle=r.isBase?`rgba(238,212,163,${alpha})`:`rgba(201,168,76,${alpha})`;
+    ctx.shadowColor=r.isBase?'rgba(238,212,163,0.4)':'rgba(201,168,76,0.2)';
+    ctx.shadowBlur=r.isBase?12:4;
+    ctx.fillRect(x-2,pad+h-barH,4,barH);
+    ctx.shadowBlur=0;
+    if(r.isBase||r.note){
+      ctx.fillStyle=r.isBase?'rgba(238,212,163,0.9)':'rgba(96,255,120,0.8)';
+      ctx.font=r.isBase?'bold 9px Share Tech Mono':'9px Share Tech Mono';
+      ctx.save(); ctx.translate(x,pad+h-barH-4); ctx.rotate(-Math.PI/4);
+      const label=r.isBase?r.freqStr:r.note||r.freqStr;
+      ctx.fillText(label.slice(0,12),0,0); ctx.restore();
+    }
+  });
+  ctx.fillStyle='rgba(100,160,220,0.4)'; ctx.font='9px Share Tech Mono';
+  ctx.fillText('log frequency scale',pad,180-4);
+}
+
+// ═══ PROTOTYPES ═══
+const PROTOS = {
+  antenna:{
+    name:'Space-Time Antenna',
+    desc:'Stella octangula structure (~50cm) with 0.5mm copper sheet faces, Sierpiński gasket fractal pattern (5 iterations), mounted on 16mm copper rods with M5 apex screws. Nested copper spheres at 50, 80, 130cm diameter. Resonant at 4.5 MHz.',
+    dims:[{name:'Inner sphere diameter',val:500},{name:'Mid sphere diameter',val:800},{name:'Outer sphere diameter',val:1300},{name:'Apex rod diameter',val:16},{name:'Copper sheet thickness',val:0.5}],
+    freq:4500000
+  },
+  flash:{
+    name:'Flash Matrix',
+    desc:'Hemispherical capacitor with 34+21 counter-rotating Fibonacci spiral conductors, central copper rod and quartz crystal sphere. Cockcroft-Walton rim circuit.',
+    dims:[{name:'Hemisphere radius',val:150},{name:'Outer conductor ring',val:243},{name:'Inner conductor ring',val:93},{name:'Central rod diameter',val:12},{name:'Crystal sphere radius',val:15}],
+    freq:null
+  },
+  cones:{
+    name:'Phi Ratio Cones',
+    desc:'Axially extended intersecting copper cones. Self-oscillating at 600kHz using Cree C2M0080120D SiC MOSFET. No gate resistor — feedback loop only.',
+    dims:[{name:'Cone base radius',val:80},{name:'Cone height',val:130},{name:'Intersection offset',val:50},{name:'Copper thickness',val:1},{name:'Rod connector diameter',val:8}],
+    freq:600000
+  },
+  electro:{
+    name:'Phi Ratio Electrolyser',
+    desc:'Concentric seven-pipe electrolysis device. Phi-ratio spacing designed for mathematically identical capacitance across all six inter-pipe gaps. Monopolar excitation.',
+    dims:[{name:'Pipe 1 (inner) OD',val:12},{name:'Pipe 2 OD',val:19.4},{name:'Pipe 3 OD',val:31.4},{name:'Pipe 4 OD',val:50.8},{name:'Pipe 5 OD',val:82.2},{name:'Pipe 6 OD',val:133},{name:'Pipe 7 OD',val:215}],
+    freq:null
+  },
+  crystal:{
+    name:'Quartz Crystal',
+    desc:'20mm vertex-to-vertex hexagonal prism, 30mm body, hemispherical base R=10mm, 30mm pyramidal tip. Total height 70mm = Egyptian Royal Cubit alignment.',
+    dims:[{name:'Total height',val:70},{name:'Hex prism width',val:20},{name:'Body length',val:30},{name:'Tip length',val:30},{name:'Base radius',val:10}],
+    freq:null
+  },
+  schumann:{
+    name:'Schumann Device',
+    desc:'Grounded human body inside copper solenoid at 7.83Hz. Saltwater bucket grounding (saline 0.9%). Frequency hierarchy: 7.83Hz → 40Hz gamma → 277Hz C# → 333kHz threshold.',
+    dims:[{name:'Solenoid diameter',val:600},{name:'Solenoid height',val:1800},{name:'Copper wire gauge (mm)',val:1.5},{name:'Turn spacing',val:20},{name:'Bucket diameter',val:300}],
+    freq:7.83
+  }
+};
+
+function loadProto(key, btn){
+  document.querySelectorAll('#protoButtons .preset-btn').forEach(b=>b.classList.remove('sel'));
+  if(btn) btn.classList.add('sel');
+  const p=PROTOS[key]; if(!p) return;
+  currentProtoData={key,...p};
+  document.getElementById('protoDesc').innerHTML=`<span style="color:var(--g-base);font-weight:600;">${p.name}</span><br>${p.desc}`;
+  // stats
+  const statsEl=document.getElementById('protoStats');
+  statsEl.innerHTML=`
+    <div class="sc"><div class="sv">${p.dims.length}</div><div class="sl">Dimensions</div></div>
+    <div class="sc"><div class="sv">${p.freq?formatFreq(p.freq):'—'}</div><div class="sl">Drive Freq</div></div>
+    <div class="sc"><div class="sv">${checkPhiAlignment(p.dims)}/${p.dims.length}</div><div class="sl">Phi-Aligned</div></div>
+    <div class="sc"><div class="sv">${(p.dims[0].val*PHI).toFixed(1)}</div><div class="sl">φ× First (mm)</div></div>`;
+  // table
+  const tbody=document.getElementById('protoTbody');
+  tbody.innerHTML=p.dims.map((d,i)=>{
+    const next=p.dims[i+1];
+    const ratio=next?next.val/d.val:null;
+    const isAligned=ratio?Math.abs(ratio-PHI)/PHI<0.05:false;
+    const recommended=(d.val*PHI).toFixed(2);
+    return `<tr>
+      <td style="color:var(--g-hi);">${d.name}</td>
+      <td class="mm-val">${d.val} mm</td>
+      <td>${next?ratio.toFixed(4):'—'}</td>
+      <td>${next?(isAligned?'<span class="match">✓ φ-ratio</span>':'<span style="color:rgba(255,100,100,0.7);">'+Math.abs(ratio-PHI).toFixed(3)+' off</span>'):'—'}</td>
+      <td class="freq-val">${recommended} mm</td>
+    </tr>`;
+  }).join('');
+  drawProtoCanvas(key, p);
+}
+
+function checkPhiAlignment(dims){
+  let count=0;
+  for(let i=0;i<dims.length-1;i++){const r=dims[i+1].val/dims[i].val;if(Math.abs(r-PHI)/PHI<0.05) count++;}
+  return count;
+}
+
+function formatFreq(f){
+  if(f>=1e6) return (f/1e6).toFixed(2)+' MHz';
+  if(f>=1e3) return (f/1e3).toFixed(2)+' kHz';
+  return f.toFixed(2)+' Hz';
+}
+
+function drawProtoCanvas(key, p){
+  const canvas=document.getElementById('protoCanvas');
+  const W=canvas.offsetWidth||920; canvas.width=W; canvas.height=260;
+  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,260);
+  const cx=W/2, cy=130;
+
+  if(key==='antenna'||key==='crystal'){
+    // nested circles
+    const maxR=100;
+    [130,80,50].forEach((d,i)=>{
+      const r=maxR*(d/130);
+      ctx.strokeStyle=`rgba(201,168,76,${0.7-i*0.15})`;ctx.lineWidth=i===0?2:1;
+      ctx.setLineDash(i>0?[4,3]:[]);
+      ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='rgba(201,168,76,0.6)';ctx.font='10px Share Tech Mono';
+      ctx.fillText(d+'cm',cx+r*Math.cos(0.4)+4,cy+r*Math.sin(0.4));
+    });
+  }
+  else if(key==='electro'){
+    const pipes=[12,19.4,31.4,50.8,82.2,133,215];
+    const scale=0.45;
+    const colors=['#EED4A3','#C9A84C','#B2936B','#8A6830','#C9A84C','#B2936B','#8A6830'];
+    pipes.forEach((d,i)=>{
+      const r=d/2*scale;
+      ctx.strokeStyle=colors[i];ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+      ctx.fillStyle='rgba(201,168,76,0.5)';ctx.font='9px Share Tech Mono';
+      ctx.fillText(d+'mm',cx+r+2,cy-4+i*2);
+    });
+  }
+  else if(key==='cones'){
+    for(let i=0;i<4;i++){
+      const r=(80-i*15)*0.9,h=(130-i*20)*0.7;
+      ctx.strokeStyle=`rgba(201,168,76,${0.7-i*0.12})`;ctx.lineWidth=i===0?2:1;
+      ctx.beginPath();ctx.moveTo(cx,cy-h/2);ctx.lineTo(cx-r,cy+h/2);ctx.lineTo(cx+r,cy+h/2);ctx.closePath();ctx.stroke();
+      // inverted
+      ctx.strokeStyle=`rgba(238,212,163,${0.4-i*0.08})`;ctx.lineWidth=0.8;
+      ctx.beginPath();ctx.moveTo(cx,cy+h/2-10);ctx.lineTo(cx-r*0.8,cy-h/2+10);ctx.lineTo(cx+r*0.8,cy-h/2+10);ctx.closePath();ctx.stroke();
+    }
+  }
+  else{
+    // generic phi spiral
+    ctx.strokeStyle='rgba(201,168,76,0.7)';ctx.lineWidth=1.5;ctx.shadowColor='rgba(201,168,76,0.3)';ctx.shadowBlur=6;
+    ctx.beginPath();
+    for(let a=0;a<5*Math.PI;a+=0.04){const r2=8*Math.pow(PHI,a/Math.PI);const x=cx+r2*Math.cos(a),y=cy+r2*Math.sin(a);a===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+    ctx.stroke();ctx.shadowBlur=0;
+  }
+  ctx.fillStyle='rgba(201,168,76,0.3)';ctx.font='9px Share Tech Mono';
+  ctx.fillText(p.name,8,16);
+}
+
+// ═══ ROYAL CUBIT ═══
+function calcCubit(){
+  const val=parseFloat(document.getElementById('cubitInput').value)||70;
+  const mode=document.getElementById('cubitFrom').value;
+  const mm=mode==='mm'?val:val*ROYAL_CUBIT;
+  const cubits=mm/ROYAL_CUBIT;
+  const statsEl=document.getElementById('cubitStats');
+  statsEl.innerHTML=`
+    <div class="sc"><div class="sv">${mm.toFixed(2)}</div><div class="sl">Millimetres</div></div>
+    <div class="sc"><div class="sv">${cubits.toFixed(6)}</div><div class="sl">Royal Cubits</div></div>
+    <div class="sc"><div class="sv">${(mm/PHI).toFixed(3)}</div><div class="sl">÷ φ (mm)</div></div>`;
+  const SIGNIFICANCE={523.6:'1 Royal Cubit',261.8:'Half Cubit = phi2 x 100',1000:'1 metre',70:'Your crystal height',20:'Crystal hex width',30:'Crystal body/tip'};
+  const tbody=document.getElementById('cubitTbody');
+  const rows=[];
+  for(let n=-4;n<=6;n++){
+    const mult=Math.pow(PHI,n);
+    const valMM=mm*mult;
+    const valCubit=valMM/ROYAL_CUBIT;
+    let sig='';
+    Object.entries(SIGNIFICANCE).forEach(([k,v])=>{if(Math.abs(valMM-parseFloat(k))/parseFloat(k)<0.01) sig=v;});
+    rows.push({n,mult,valMM,valCubit,sig,isBase:n===0});
+  }
+  tbody.innerHTML=rows.map(r=>`
+    <tr class="${r.isBase?'base-row':''}">
+      <td class="step">φ^${r.n}</td>
+      <td>${r.mult.toFixed(6)}</td>
+      <td class="mm-val">${r.valMM.toFixed(3)}</td>
+      <td>${r.valCubit.toFixed(6)}</td>
+      <td style="color:${r.sig?'#60ff80':'rgba(200,220,255,0.4)'};">${r.sig||''}</td>
+    </tr>`).join('');
+  drawCubitCanvas(mm);
+}
+
+function drawCubitCanvas(baseMM){
+  const canvas=document.getElementById('cubitCanvas');
+  const W=canvas.offsetWidth||900; canvas.width=W; canvas.height=260;
+  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,260);
+
+  const margin=16;
+  const maxW=W-margin*2;
+  const maxH=220;
+
+  // Draw 6 nested phi rectangles, all fitting inside canvas
+  // Start with the full available space and subdivide inward
+  // Each step: remove a square from the left, remaining rectangle is 1/phi smaller
+  let rx=margin, ry=20, rw=maxW, rh=maxW/PHI;
+
+  // If height too tall, scale down
+  if(rh>maxH){ const sc=maxH/rh; rw*=sc; rh*=sc; rx=margin+(maxW-rw)/2; }
+
+  // Center vertically
+  ry = 20 + (maxH - rh)/2;
+
+  const iterations = 7;
+  for(let i=0;i<iterations;i++){
+    if(rw<4 || rh<4) break;
+    const alpha=Math.max(0.15, 0.75-i*0.09);
+
+    // Fill with very subtle background
+    ctx.fillStyle=`rgba(201,168,76,${0.03+i*0.01})`;
+    ctx.fillRect(rx,ry,rw,rh);
+
+    // Outer rectangle border
+    ctx.strokeStyle=i===0?`rgba(238,212,163,${alpha})`:`rgba(201,168,76,${alpha})`;
+    ctx.lineWidth=i===0?2:1;
+    ctx.strokeRect(rx,ry,rw,rh);
+
+    // Square portion (dashed) - the square is h x h on the left
+    const sq=rh; // square side = shorter dimension
+    ctx.strokeStyle=`rgba(201,168,76,${alpha*0.5})`;
+    ctx.lineWidth=0.6;
+    ctx.setLineDash([3,3]);
+    ctx.strokeRect(rx,ry,sq,sq);
+    ctx.setLineDash([]);
+
+    // Arc in square corner (golden spiral visual cue)
+    ctx.strokeStyle=`rgba(201,168,76,${alpha*0.6})`;
+    ctx.lineWidth=i===0?1.5:0.8;
+    ctx.beginPath();
+    if(i%4===0) ctx.arc(rx+sq, ry+sq, sq, Math.PI, 1.5*Math.PI);
+    else if(i%4===1) ctx.arc(rx, ry+sq, sq, 1.5*Math.PI, 0);
+    else if(i%4===2) ctx.arc(rx, ry, sq, 0, 0.5*Math.PI);
+    else ctx.arc(rx+sq, ry, sq, 0.5*Math.PI, Math.PI);
+    ctx.stroke();
+
+    // Label - show actual mm value
+    const mmVal=(baseMM*Math.pow(PHI,i)).toFixed(2);
+    const cubitVal=(baseMM*Math.pow(PHI,i)/523.6).toFixed(4);
+    ctx.fillStyle=i===0?'rgba(238,212,163,0.95)':'rgba(201,168,76,'+(alpha*0.9)+')';
+    ctx.font=(i===0?'bold ':'')+'9px Share Tech Mono';
+    if(rw>60){
+      ctx.fillText(mmVal+'mm', rx+4, ry+rh-5);
+    }
+    // phi label on square
+    if(sq>30){
+      ctx.fillStyle=`rgba(200,120,255,${alpha*0.7})`;
+      ctx.font='8px Share Tech Mono';
+      ctx.fillText('phi^'+i, rx+sq/2-12, ry+sq/2+3);
+    }
+
+    // Step into remaining rectangle (right portion after removing square)
+    rx = rx + sq;
+    rw = rw - sq;
+    // swap w/h for next golden rectangle (landscape <-> portrait alternation)
+    if(rw < rh){ const tmp=rw; rw=rh; rh=tmp; ry=ry; rx=rx; }
+    // Actually for proper phi rect cascade: remaining rect after removing sq
+    // new w = old h, new h = old w - old h = old h * (1/phi)
+    // just keep rw=old_h, rh=rw/phi
+    rh = rw/PHI;
+  }
+
+  // Draw golden spiral overlay
+  ctx.strokeStyle='rgba(255,180,0,0.25)';
+  ctx.lineWidth=1.5;
+  ctx.shadowColor='rgba(255,180,0,0.2)'; ctx.shadowBlur=4;
+  ctx.beginPath();
+  // spiral from center outward
+  const spiralCX=margin+maxW*0.5, spiralCY=20+maxH/2;
+  for(let a=0;a<4*Math.PI;a+=0.05){
+    const r2=8*Math.pow(PHI,a/Math.PI);
+    if(r2>Math.min(maxW,maxH)*0.5) break;
+    const sx=spiralCX+r2*Math.cos(a), sy=spiralCY+r2*Math.sin(a);
+    a===0?ctx.moveTo(sx,sy):ctx.lineTo(sx,sy);
+  }
+  ctx.stroke(); ctx.shadowBlur=0;
+
+  // Header label
+  ctx.fillStyle='rgba(201,168,76,0.35)'; ctx.font='9px Share Tech Mono';
+  ctx.fillText('Phi Rectangle Cascade  |  Base: '+baseMM.toFixed(2)+'mm  |  Royal Cubit = 523.6mm', 8, 14);
+
+  // Royal Cubit marker line
+  const rcPx = margin + (523.6/baseMM > 1 ? Math.min((523.6/(baseMM*Math.pow(PHI,6)))*maxW*0.5, maxW*0.95) : maxW*0.95);
+  ctx.strokeStyle='rgba(96,200,255,0.4)'; ctx.lineWidth=1; ctx.setLineDash([2,4]);
+  ctx.beginPath(); ctx.moveTo(margin+maxW*0.5, 20); ctx.lineTo(margin+maxW*0.5, 20+maxH);
+  ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='rgba(96,200,255,0.5)'; ctx.font='8px Share Tech Mono';
+  ctx.fillText('523.6mm', margin+maxW*0.5+3, 30);
+}
+// ═══ UTILS ═══
+function copyVal(v){navigator.clipboard.writeText(v).then(()=>{document.getElementById('geoStatus').textContent='Copied: '+v+' mm';setTimeout(()=>calcGeo(),2000);});}
+
+function copySpecTable(){
+  const rows=currentGeoData.map(r=>'phi^'+r.n+'  |  '+r.mult.toFixed(6)+'  |  '+r.valMM.toFixed(4)+' mm').join('\n');
+  navigator.clipboard.writeText('ALLISTAR CENTER - PHI-RATIO SPEC TABLE\n\n'+rows).then(()=>setExportStatus('Table copied to clipboard'));
+}
+
+function setExportStatus(m){const el=document.getElementById('exportStatus');el.textContent=m;setTimeout(()=>el.textContent='',3000);}
+
+// ═══ EXPORT PDF ═══
+function exportSpecPDF(){
+  if(typeof window.jspdf==='undefined'){setExportStatus('PDF library loading...');return;}
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const pageW=doc.internal.pageSize.getWidth();
+  const label=document.getElementById('specLabel').value||'Phi-Ratio Geometry Specification';
+  const notes=document.getElementById('specNotes').value||'—';
+  const now=new Date().toISOString().replace('T',' ').slice(0,19);
+
+  doc.setFillColor(8,15,40);doc.rect(0,0,pageW,297,'F');
+  doc.setDrawColor(201,168,76);doc.setLineWidth(0.8);doc.line(10,8,pageW-10,8);
+  doc.setTextColor(201,168,76);doc.setFont('helvetica','bold');doc.setFontSize(16);
+  doc.text('ALLISTAR CENTER',pageW/2,18,{align:'center'});
+  doc.setFontSize(8);doc.setTextColor(178,147,107);
+  doc.text('PHI-RATIO GEOMETRY SPECIFICATION SHEET',pageW/2,24,{align:'center'});
+  doc.setDrawColor(138,104,48);doc.setLineWidth(0.3);doc.line(10,28,pageW-10,28);
+
+  doc.setTextColor(201,168,76);doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text('SPECIFICATION',14,36);doc.setTextColor(224,216,192);doc.text(label,45,36);
+  doc.setTextColor(201,168,76);doc.text('DATE',14,42);doc.setTextColor(224,216,192);doc.text(now+' UTC',45,42);
+  doc.setTextColor(201,168,76);doc.text('PHI',14,48);doc.setTextColor(96,200,255);doc.text('φ = 1.6180339887...',45,48);
+
+  // capture geo canvas
+  const gc=document.getElementById('geoCanvas');
+  try{doc.setFillColor(6,14,32);doc.setDrawColor(138,104,48);doc.setLineWidth(0.4);doc.rect(10,54,pageW-20,50,'FD');doc.setTextColor(201,168,76);doc.setFontSize(7);doc.text('GEOMETRIC DIAGRAM',14,60);doc.addImage(gc.toDataURL('image/png'),'PNG',12,62,pageW-24,38);}catch(e){}
+
+  // table
+  doc.setFillColor(0,8,30);doc.setDrawColor(138,104,48);doc.setLineWidth(0.3);doc.rect(10,110,pageW-20,8,'FD');
+  doc.setTextColor(201,168,76);doc.setFontSize(7);
+  ['STEP','MULTIPLIER','VALUE (mm)','VALUE (unit)'].forEach((h,i)=>doc.text(h,14+i*44,116));
+  let y=120;
+  currentGeoData.forEach(r=>{
+    if(y>275){doc.addPage();doc.setFillColor(8,15,40);doc.rect(0,0,pageW,297,'F');y=20;}
+    if(r.isBase){doc.setFillColor(20,30,60);doc.rect(10,y-4,pageW-20,8,'F');}
+    doc.setTextColor(r.isBase?238:200,r.isBase?212:220,r.isBase?163:255);doc.setFontSize(7);
+    doc.text('φ^'+r.n,14,y);
+    doc.text(r.mult.toFixed(6),44,y);
+    doc.setTextColor(96,200,255);doc.text(r.valMM.toFixed(4),88,y);
+    doc.setTextColor(238,212,163);doc.text(r.valUnit.toFixed(4),132,y);
+    y+=7;
+  });
+
+  if(notes!=='—'){
+    doc.setFillColor(0,5,22);doc.setDrawColor(138,104,48);doc.rect(10,y+4,pageW-20,24,'FD');
+    doc.setTextColor(201,168,76);doc.setFontSize(7);doc.text('MANUFACTURER NOTES',14,y+10);
+    doc.setTextColor(224,216,192);const nl=doc.splitTextToSize(notes,pageW-28);doc.text(nl.slice(0,3),14,y+16);
+    y+=28;
+  }
+
+  doc.setDrawColor(201,168,76);doc.setLineWidth(0.3);doc.line(10,287,pageW-10,287);
+  doc.setTextColor(178,147,107);doc.setFontSize(7);
+  doc.text('Resonance Is the Foundation  |  Allistar Center  |  allistarcenter.com  |  φ = 1.6180339887',pageW/2,292,{align:'center'});
+
+  doc.save('Allistar_PhiSpec_'+label.replace(/[^a-zA-Z0-9]/g,'_').slice(0,25)+'_'+now.slice(0,10)+'.pdf');
+  setExportStatus('Spec sheet exported');
+}
+
+// ═══ INIT ═══
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    calcGeo();
+    loadProto('antenna', document.querySelector('.preset-btn.sel'));
+    calcCubit();
+  }, 100);
+});
+window.addEventListener('resize',()=>{
+  calcGeo();
+  if(currentFreqData.length) drawFreqCanvas(currentFreqData);
+  if(currentProtoData) drawProtoCanvas(currentProtoData.key, currentProtoData);
+  calcCubit();
+});
+
+
+// ═══════════════════════════════════════════
+// RESONANT FREQUENCY CALCULATOR
+// ═══════════════════════════════════════════
+function calcResonant(){
+  const D = parseFloat(document.getElementById('r-diam').value)||50;
+  const wire = parseFloat(document.getElementById('r-wire').value)||1.5;
+  const N = parseFloat(document.getElementById('r-turns').value)||10;
+  const C_pF = parseFloat(document.getElementById('r-cap').value)||100;
+  const mu_r = parseFloat(document.getElementById('r-core').value)||1;
+  const manualLen = parseFloat(document.getElementById('r-length').value)||0;
+  // Wheeler formula for air core (uH): L_air = (D_cm^2 * N^2) / (45*D_cm + 100*l_cm)
+  const D_cm = D/10;
+  const l_cm = manualLen>0 ? manualLen/10 : N*wire/10;
+  const L_air_uH = (D_cm*D_cm*N*N) / (45*D_cm + 100*l_cm);
+  // For cored coils: L = mu_r * L_air (simplified — valid for toroidal/pot cores)
+  // For solenoid with partial core filling we use mu_eff = 1 + (mu_r-1)*fill_factor
+  // Approximate fill factor = 0.7 for typical wound core
+  const fill = mu_r > 1 ? 0.7 : 1;
+  const mu_eff = 1 + (mu_r - 1) * fill;
+  const L_uH = L_air_uH * mu_eff;
+  const L_H = L_uH * 1e-6;
+  const C_F = C_pF * 1e-12;
+  const freq = 1 / (2*Math.PI*Math.sqrt(L_H*C_F));
+  const wavelength = 3e8/freq;
+  const coreNames = {1:'Air Core',2000:'Ferrite (~2000)',5000:'High-mu Ferrite (~5000)',200:'Iron Powder (~200)',4000:'MnZn Ferrite (~4000)',700:'NiZn Ferrite (~700)',6000:'Silicon Steel (~6000)'};
+  const coreName = coreNames[mu_r]||'Custom mu='+mu_r;
+  const infoEl = document.getElementById('coreInfo');
+  if(infoEl) infoEl.textContent = coreName+' | mu_r='+mu_r+' | mu_eff='+mu_eff.toFixed(1)+' | L_air='+L_air_uH.toFixed(3)+'uH | L_cored='+L_uH.toFixed(3)+'uH | Coil length='+l_cm.toFixed(2)+'cm';
+  document.getElementById('r-freq').textContent = formatFreqR(freq);
+  document.getElementById('r-ind').textContent = L_uH.toFixed(3)+' uH';
+  document.getElementById('r-wave').textContent = wavelength>=1?wavelength.toFixed(2)+' m':(wavelength*100).toFixed(1)+' cm';
+  // phi cascade
+  const SCHUMANN = [7.83,14.3,20.8,26.4,32.4,39];
+  const rows=[];
+  for(let n=-4;n<=6;n++){
+    const f=freq*Math.pow(PHI,n);
+    const qw=3e8/f/4, hw=3e8/f/2;
+    const isSchumann=SCHUMANN.some(s=>Math.abs(f-s)/s<0.05);
+    rows.push({n,f,qw,hw,isSchumann});
+  }
+  document.getElementById('resonantTbody').innerHTML=rows.map(r=>`
+    <tr class="${r.n===0?'base-row':''}">
+      <td class="step">phi^${r.n}</td>
+      <td class="freq-val" style="${r.isSchumann?'color:#60ff80;':''}">${formatFreqR(r.f)}</td>
+      <td>${formatLength(r.qw)}</td>
+      <td>${formatLength(r.hw)}</td>
+      <td style="color:${r.isSchumann?'#60ff80':'rgba(200,220,255,0.3)'};">${r.isSchumann?'Schumann match':''}</td>
+    </tr>`).join('');
+  drawResonantCanvas(rows, freq);
+}
+
+function formatFreqR(f){
+  if(f>=1e9) return (f/1e9).toFixed(4)+' GHz';
+  if(f>=1e6) return (f/1e6).toFixed(4)+' MHz';
+  if(f>=1e3) return (f/1e3).toFixed(4)+' kHz';
+  return f.toFixed(4)+' Hz';
+}
+function formatLength(m){
+  if(m>=1) return m.toFixed(3)+' m';
+  if(m>=0.001) return (m*100).toFixed(2)+' cm';
+  return (m*1000).toFixed(2)+' mm';
+}
+
+function drawResonantCanvas(rows, baseFreq){
+  const canvas=document.getElementById('resonantCanvas');
+  const W=canvas.offsetWidth||900; canvas.width=W; canvas.height=160;
+  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,160);
+  const pad=28,h=160-pad*2;
+  ctx.strokeStyle='rgba(30,70,160,0.2)';ctx.lineWidth=0.5;
+  for(let g=0;g<=4;g++){const y=pad+g/4*h;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(W-pad,y);ctx.stroke();}
+  const freqs=rows.map(r=>r.f).filter(f=>f>0);
+  const minL=Math.log10(Math.min(...freqs)), maxL=Math.log10(Math.max(...freqs)), range=maxL-minL||1;
+  rows.forEach(r=>{
+    if(r.f<=0) return;
+    const x=pad+(Math.log10(r.f)-minL)/range*(W-pad*2);
+    const barH=r.n===0?h*0.8:h*0.45;
+    ctx.fillStyle=r.isSchumann?'rgba(96,255,120,0.8)':r.n===0?'rgba(238,212,163,0.9)':'rgba(201,168,76,0.55)';
+    ctx.shadowColor=r.n===0?'rgba(238,212,163,0.4)':'rgba(201,168,76,0.2)'; ctx.shadowBlur=r.n===0?12:4;
+    ctx.fillRect(x-2,pad+h-barH,4,barH); ctx.shadowBlur=0;
+    if(r.n===0||r.isSchumann){
+      ctx.fillStyle=r.isSchumann?'rgba(96,255,120,0.9)':'rgba(238,212,163,0.9)';
+      ctx.font='9px Share Tech Mono'; ctx.save(); ctx.translate(x,pad+h-barH-4); ctx.rotate(-0.6);
+      ctx.fillText(formatFreqR(r.f).slice(0,10),0,0); ctx.restore();
+    }
+  });
+}
+
+// ═══════════════════════════════════════════
+// SACRED GEOMETRY
+// ═══════════════════════════════════════════
+let currentSacredForm = 'flower';
+const SACRED_FORMS = {
+  flower:{
+    name:'Flower of Life',
+    desc:'The Flower of Life consists of 19 overlapping circles arranged in a hexagonal pattern, each circle centered on the circumference of 6 surrounding circles. The pattern encodes all five Platonic solids and is the geometric basis of Metatrons Cube. The ratio between the outer containing circle and any inner petal circle is exactly 3:1. The pattern appears in ancient temples worldwide including Abydos Egypt (6000+ years old).',
+    ratios:[
+      {dim:'Petal circle radius',ratio:'1.000',sig:'Base unit'},
+      {dim:'Center to petal center',ratio:'1.000',sig:'Equal to radius'},
+      {dim:'Outer circle radius',ratio:'3.000',sig:'3x base'},
+      {dim:'Vesica Piscis height',ratio:'1.732',sig:'sqrt(3)'},
+      {dim:'Inner Star point',ratio:'0.577',sig:'1/sqrt(3)'},
+    ]
+  },
+  metatron:{
+    name:"Metatron's Cube",
+    desc:"Metatron's Cube is derived from the Fruit of Life (13 circles) by connecting every circle center to every other center with straight lines. It contains all 5 Platonic solids simultaneously: tetrahedron, cube, octahedron, dodecahedron, icosahedron. The phi ratio appears in the relationship between the outer and inner star polygons.",
+    ratios:[
+      {dim:'Outer circle radius',ratio:'1.000',sig:'Base unit'},
+      {dim:'Inner ring radius',ratio:'0.500',sig:'Exact half'},
+      {dim:'Star point extension',ratio:'1.618',sig:'PHI'},
+      {dim:'Inner pentagon ratio',ratio:'0.618',sig:'1/PHI'},
+      {dim:'Cube face diagonal',ratio:'1.414',sig:'sqrt(2)'},
+    ]
+  },
+  vesica:{
+    name:'Vesica Piscis',
+    desc:'The Vesica Piscis is formed by the intersection of two circles of equal radius where each circle passes through the others center. The ratio of its width to height is 1:sqrt(3) = 1:1.732. It is the geometric mother form from which the equilateral triangle, square, and pentagon can all be derived. In S/T Field terms it represents the S-Field and T-Field in their point of intersection.',
+    ratios:[
+      {dim:'Circle radius',ratio:'1.000',sig:'Base unit'},
+      {dim:'Vesica width',ratio:'1.000',sig:'= radius'},
+      {dim:'Vesica height',ratio:'1.732',sig:'sqrt(3)'},
+      {dim:'Inner triangle side',ratio:'1.732',sig:'sqrt(3)'},
+      {dim:'Circumscribed circle',ratio:'2.000',sig:'2x radius'},
+    ]
+  },
+  seed:{
+    name:'Seed of Life',
+    desc:'The Seed of Life consists of 7 circles: one central circle surrounded by 6 circles whose centers fall on the circumference of the central circle. It is the first stage of the Flower of Life. The 6 surrounding circles divide the central circle into exactly 6 equal arcs. The pattern encodes the 6 directions of 3D space and the 7 days of creation across multiple traditions.',
+    ratios:[
+      {dim:'Circle radius',ratio:'1.000',sig:'Base unit'},
+      {dim:'Center-to-center distance',ratio:'1.000',sig:'Equal to radius'},
+      {dim:'Outer envelope radius',ratio:'2.000',sig:'2x radius'},
+      {dim:'Inner star points',ratio:'0.500',sig:'Half radius'},
+      {dim:'Petal arc length',ratio:'1.047',sig:'pi/3'},
+    ]
+  },
+  yantra:{
+    name:'Sri Yantra',
+    desc:'The Sri Yantra consists of 9 interlocking triangles: 4 pointing upward (Shiva / masculine / S-Field) and 5 pointing downward (Shakti / feminine / T-Field). Their intersection creates 43 smaller triangles. The outer square has 4 gates. The central bindu point represents the Point Fulcrum in S/T Field terms. The ratio of the outer triangle to the central triangle approximates phi^2.',
+    ratios:[
+      {dim:'Outer triangle base',ratio:'1.000',sig:'Base unit'},
+      {dim:'Inner triangle base',ratio:'0.382',sig:'1/phi^2'},
+      {dim:'Bindu (center point)',ratio:'0.050',sig:'Approaches zero'},
+      {dim:'Gate width',ratio:'0.618',sig:'1/phi'},
+      {dim:'Outer circle radius',ratio:'1.000',sig:'Circumscribes outer tri'},
+    ]
+  },
+  pentagon:{
+    name:'Pentagon / Pentagram',
+    desc:'The regular pentagon and its inscribed pentagram (five-pointed star) are the purest geometric embodiment of the golden ratio phi. Every diagonal of a pentagon is phi times longer than its side. The pentagram contains phi ratios at every scale of subdivision - it is the only polygon where the ratio between different sized elements is always phi.',
+    ratios:[
+      {dim:'Pentagon side',ratio:'1.000',sig:'Base unit'},
+      {dim:'Diagonal length',ratio:'1.618',sig:'PHI exactly'},
+      {dim:'Star point triangle base',ratio:'0.618',sig:'1/PHI'},
+      {dim:'Inner pentagon side',ratio:'0.382',sig:'1/PHI^2'},
+      {dim:'Circumscribed circle R',ratio:'0.851',sig:'1/(2*sin(pi/5))'},
+    ]
+  }
+};
+
+function loadSacredForm(key, btn){
+  document.querySelectorAll('#geoFormBtns .preset-btn').forEach(b=>b.classList.remove('sel'));
+  if(btn) btn.classList.add('sel');
+  currentSacredForm = key;
+  drawSacredForm();
+  const form = SACRED_FORMS[key];
+  if(!form) return;
+  document.getElementById('sacredDesc').innerHTML = '<strong style="color:var(--g-base);">'+form.name+'</strong><br>'+form.desc;
+  const scale = parseFloat(document.getElementById('sg-scale').value)||200;
+  document.getElementById('sacredTbody').innerHTML = form.ratios.map(r=>`
+    <tr>
+      <td style="color:var(--g-hi);">${r.dim}</td>
+      <td class="step">${r.ratio}</td>
+      <td class="mm-val">${(parseFloat(r.ratio)*scale).toFixed(2)} mm</td>
+      <td style="color:${r.ratio==='1.618'?'#60ff80':r.ratio==='0.618'?'#60c8ff':'rgba(200,220,255,0.6)'};">${r.sig}</td>
+    </tr>`).join('');
+}
+
+function drawSacredForm(){
+  const canvas = document.getElementById('sacredCanvas');
+  const W = canvas.offsetWidth||900; canvas.width=W; canvas.height=320;
+  const ctx = canvas.getContext('2d'); ctx.clearRect(0,0,W,320);
+  const cx=W/2, cy=160, R=120;
+  const gold = '#C9A84C', goldHi = '#EED4A3', cyan = '#00c8ff';
+  // Update ratio table with current scale
+  const scale = parseFloat(document.getElementById('sg-scale').value)||200;
+  const form = SACRED_FORMS[currentSacredForm];
+  if(form){
+    document.getElementById('sacredDesc').innerHTML = '<strong style="color:var(--g-base);">'+form.name+'</strong><br>'+form.desc;
+    document.getElementById('sacredTbody').innerHTML = form.ratios.map(r=>`
+      <tr>
+        <td style="color:var(--g-hi);">${r.dim}</td>
+        <td class="step">${r.ratio}</td>
+        <td class="mm-val">${(parseFloat(r.ratio)*scale).toFixed(2)} mm</td>
+        <td style="color:${r.ratio==='1.618'?'#60ff80':r.ratio==='0.618'?'#60c8ff':'rgba(200,220,255,0.6)'};">${r.sig}</td>
+      </tr>`).join('');
+  }
+
+  function circle(x,y,r,color,alpha,dashed){
+    ctx.strokeStyle=color||gold; ctx.globalAlpha=alpha||0.7; ctx.lineWidth=1;
+    if(dashed) ctx.setLineDash([3,3]); else ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.stroke();
+    ctx.globalAlpha=1; ctx.setLineDash([]);
+  }
+  function line(x1,y1,x2,y2,color,alpha){
+    ctx.strokeStyle=color||gold; ctx.globalAlpha=alpha||0.5; ctx.lineWidth=0.8;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); ctx.globalAlpha=1;
+  }
+  function polygon(cx,cy,r,n,rot,color,alpha,fill){
+    ctx.strokeStyle=color||gold; ctx.fillStyle=fill||'transparent'; ctx.globalAlpha=alpha||0.7; ctx.lineWidth=1.2;
+    ctx.beginPath();
+    for(let i=0;i<=n;i++){const a=rot+i*2*Math.PI/n; ctx.lineTo(cx+r*Math.cos(a), cy+r*Math.sin(a));}
+    ctx.stroke(); if(fill) ctx.fill(); ctx.globalAlpha=1;
+  }
+
+  if(currentSacredForm==='flower'||currentSacredForm==='seed'){
+    const n = currentSacredForm==='flower'?18:6;
+    circle(cx,cy,R,goldHi,0.8);
+    for(let i=0;i<6;i++){
+      const a=i*Math.PI/3;
+      circle(cx+R*Math.cos(a), cy+R*Math.sin(a), R, gold, 0.5);
+    }
+    if(currentSacredForm==='flower'){
+      for(let i=0;i<6;i++){
+        const a=i*Math.PI/3+Math.PI/6;
+        circle(cx+R*2*Math.cos(a)*Math.sin(Math.PI/6+Math.PI/3), cy+R*2*Math.sin(a)*Math.sin(Math.PI/6+Math.PI/3), R, gold, 0.3);
+      }
+      circle(cx,cy,R*3,goldHi,0.3,true);
+    }
+  }
+  else if(currentSacredForm==='metatron'){
+    const pts=[];
+    pts.push([cx,cy]);
+    for(let i=0;i<6;i++){const a=i*Math.PI/3; pts.push([cx+R*Math.cos(a),cy+R*Math.sin(a)]);}
+    for(let i=0;i<6;i++){const a=i*Math.PI/3+Math.PI/6; pts.push([cx+R*2*0.866*Math.cos(a),cy+R*2*0.866*Math.sin(a)]);}
+    pts.forEach(([x,y])=>circle(x,y,R*0.5,gold,0.35));
+    for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++) line(pts[i][0],pts[i][1],pts[j][0],pts[j][1],gold,0.15);
+    circle(cx,cy,R*2,goldHi,0.4,true);
+    polygon(cx,cy,R*PHI,-3,-Math.PI/2,goldHi,0.7);
+    polygon(cx,cy,R*PHI,-3,Math.PI/2,cyan,0.5);
+  }
+  else if(currentSacredForm==='vesica'){
+    const off=R*0.5;
+    circle(cx-off,cy,R,gold,0.7);
+    circle(cx+off,cy,R,cyan,0.7);
+    ctx.fillStyle='rgba(201,168,76,0.08)';
+    ctx.beginPath();
+    ctx.arc(cx-off,cy,R,-(Math.PI/3),Math.PI/3); ctx.arc(cx+off,cy,R,2*Math.PI/3,4*Math.PI/3); ctx.closePath();
+    ctx.fill();
+    const vh=R*Math.sqrt(3);
+    line(cx,cy-vh/2,cx,cy+vh/2,goldHi,0.8);
+    ctx.fillStyle='rgba(238,212,163,0.7)'; ctx.font='10px Share Tech Mono';
+    ctx.fillText('sqrt(3):1',cx+6,cy);
+  }
+  else if(currentSacredForm==='yantra'){
+    function tri(cx,cy,r,up,color){
+      ctx.strokeStyle=color; ctx.lineWidth=1.2; ctx.globalAlpha=0.7;
+      ctx.beginPath();
+      if(up){ctx.moveTo(cx,cy-r);ctx.lineTo(cx-r*0.866,cy+r/2);ctx.lineTo(cx+r*0.866,cy+r/2);}
+      else{ctx.moveTo(cx,cy+r);ctx.lineTo(cx-r*0.866,cy-r/2);ctx.lineTo(cx+r*0.866,cy-r/2);}
+      ctx.closePath(); ctx.stroke(); ctx.globalAlpha=1;
+    }
+    circle(cx,cy,R*1.15,goldHi,0.4,true);
+    const sizes=[R,R*0.8,R*0.65,R*0.5,R*0.38,R*0.28,R*0.2,R*0.14,R*0.1];
+    sizes.forEach((r,i)=>tri(cx,cy,r,i%2===0,i%2===0?gold:cyan));
+    ctx.fillStyle='rgba(238,212,163,0.9)'; ctx.beginPath(); ctx.arc(cx,cy,4,0,Math.PI*2); ctx.fill();
+  }
+  else if(currentSacredForm==='pentagon'){
+    polygon(cx,cy,R,-5,-Math.PI/2,gold,0.8);
+    for(let i=0;i<5;i++){
+      const a1=-Math.PI/2+i*2*Math.PI/5, a2=-Math.PI/2+(i+2)*2*Math.PI/5;
+      line(cx+R*Math.cos(a1),cy+R*Math.sin(a1),cx+R*Math.cos(a2),cy+R*Math.sin(a2),goldHi,0.7);
+    }
+    const innerR=R/PHI/PHI;
+    polygon(cx,cy,innerR,-5,-Math.PI/2,cyan,0.6);
+    ctx.fillStyle='rgba(238,212,163,0.7)'; ctx.font='10px Share Tech Mono';
+    ctx.fillText('phi = 1.618',cx-28,cy+R+18);
+  }
+
+  // phi label
+  ctx.fillStyle='rgba(201,168,76,0.3)'; ctx.font='9px Share Tech Mono';
+  ctx.fillText(SACRED_FORMS[currentSacredForm]?.name||'', 8, 16);
+}
+
+// ═══════════════════════════════════════════
+// WAVELENGTH MATCHER
+// ═══════════════════════════════════════════
+function setWlPreset(f){document.getElementById('wl-freq').value=f; calcWavelength();}
+
+function calcWavelength(){
+  const freq=parseFloat(document.getElementById('wl-freq').value)||4500000;
+  const vf=parseFloat(document.getElementById('wl-medium').value)||1;
+  const c=3e8*vf;
+  const wl=c/freq;
+  const full=wl, half=wl/2, quarter=wl/4, eighth=wl/8;
+  document.getElementById('wl-full').textContent=formatLength(full);
+  document.getElementById('wl-half').textContent=formatLength(half);
+  document.getElementById('wl-quarter').textContent=formatLength(quarter);
+  document.getElementById('wl-eighth').textContent=formatLength(eighth);
+  // phi cascade from quarter wave length
+  const METALS={copper:'0.5mm solid',copper2:'1.0mm solid',copper3:'1.5mm solid',copper_tube:'10mm tube'};
+  const rows=[];
+  for(let n=-3;n<=6;n++){
+    const len=quarter*Math.pow(PHI,n);
+    const resFreq=c/(len*4);
+    rows.push({n,len,resFreq,isBase:n===0});
+  }
+  document.getElementById('wavelengthTbody').innerHTML=rows.map(r=>`
+    <tr class="${r.isBase?'base-row':''}">
+      <td class="step">phi^${r.n}</td>
+      <td class="mm-val">${formatLength(r.len)}</td>
+      <td class="freq-val">${formatFreqR(r.resFreq)}</td>
+      <td>${formatLength(r.len)} copper wire</td>
+      <td>${r.isBase?'<span style="color:var(--g-hi)">Base quarter-wave</span>':''}</td>
+    </tr>`).join('');
+  drawWavelengthCanvas(rows, quarter);
+}
+
+function drawWavelengthCanvas(rows, base){
+  const canvas=document.getElementById('wavelengthCanvas');
+  const W=canvas.offsetWidth||900; canvas.width=W; canvas.height=160;
+  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,160);
+  const pad=28,h=160-pad*2;
+  ctx.strokeStyle='rgba(30,70,160,0.2)';ctx.lineWidth=0.5;
+  for(let g=0;g<=3;g++){const y=pad+g/3*h;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(W-pad,y);ctx.stroke();}
+  const maxLen=Math.max(...rows.map(r=>r.len));
+  rows.forEach(r=>{
+    const x=pad+(rows.indexOf(r))/(rows.length-1)*(W-pad*2);
+    const barH=Math.min(h,(r.len/maxLen)*h*0.9);
+    ctx.fillStyle=r.isBase?'rgba(238,212,163,0.9)':'rgba(201,168,76,0.5)';
+    ctx.shadowColor=r.isBase?'rgba(238,212,163,0.5)':'none'; ctx.shadowBlur=r.isBase?10:0;
+    ctx.fillRect(x-5,pad+h-barH,10,barH); ctx.shadowBlur=0;
+    ctx.fillStyle=r.isBase?'rgba(238,212,163,0.9)':'rgba(201,168,76,0.5)';
+    ctx.font='8px Share Tech Mono'; ctx.save(); ctx.translate(x,pad+h-barH-4); ctx.rotate(-0.5);
+    ctx.fillText(formatLength(r.len).slice(0,8),0,0); ctx.restore();
+  });
+}
+
+// ═══════════════════════════════════════════
+// FRACTAL SCALER
+// ═══════════════════════════════════════════
+let currentFractal='sierpinski', phiOverlayOn=false;
+
+function setFractalType(type, btn){
+  currentFractal=type;
+  document.querySelectorAll('#fractalTypeBtns .preset-btn').forEach(b=>b.classList.remove('sel'));
+  if(btn) btn.classList.add('sel');
+  drawFractal();
+}
+
+function togglePhiOverlay(){
+  phiOverlayOn=!phiOverlayOn;
+  document.getElementById('phiOverlayBtn').textContent=phiOverlayOn?'ON':'OFF';
+  document.getElementById('phiOverlayBtn').style.borderColor=phiOverlayOn?'var(--g-base)':'var(--btn-border)';
+  document.getElementById('phiOverlayBtn').style.color=phiOverlayOn?'#e8c870':'var(--btn-text)';
+  drawFractal();
+}
+
+function drawFractal(){
+  const iter=parseInt(document.getElementById('frac-iter').value)||3;
+  const physSize=parseFloat(document.getElementById('frac-size').value)||500;
+  const canvas=document.getElementById('fractalCanvas');
+  const W=canvas.offsetWidth||900; canvas.width=W; canvas.height=360;
+  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,360);
+  ctx.fillStyle='rgba(238,212,163,0.7)'; ctx.font='10px Share Tech Mono';
+  ctx.fillText(currentFractal+' | iteration '+iter+' | physical size: '+physSize+'mm',8,16);
+
+  if(currentFractal==='sierpinski') drawSierpinski(ctx,W,360,iter,physSize);
+  else if(currentFractal==='carpet') drawCarpet(ctx,W,360,iter,physSize);
+  else if(currentFractal==='koch') drawKoch(ctx,W,360,iter,physSize);
+  else if(currentFractal==='mandelbrot') drawMandelbrot(ctx,W,360,iter);
+
+  if(phiOverlayOn){
+    const cx=W/2,cy=185,maxR=Math.min(W,360)*0.42;
+    ctx.strokeStyle='rgba(255,120,255,0.35)'; ctx.lineWidth=0.8;
+    ctx.shadowColor='rgba(255,120,255,0.3)'; ctx.shadowBlur=4;
+    ctx.beginPath();
+    for(let a=0;a<5*Math.PI;a+=0.03){
+      const r=5*Math.pow(PHI,a/Math.PI);
+      if(r>maxR) break;
+      const x=cx+r*Math.cos(a),y=cy+r*Math.sin(a);
+      a<0.03?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke(); ctx.shadowBlur=0;
+    ctx.fillStyle='rgba(255,120,255,0.7)'; ctx.font='9px Share Tech Mono';
+    ctx.fillText('phi spiral overlay',W-110,24);
+  }
+  updateFractalStats(iter, physSize);
+  buildFractalTable(iter, physSize);
+}
+
+function drawSierpinski(ctx,W,H,iter,physMM){
+  const margin=30;
+  const size=Math.min(W-margin*2,(H-margin*2)/0.866);
+  const bx=(W-size)/2, by=H-margin;
+  function tri(ax,ay,bx2,by2,cx2,cy2,depth){
+    if(depth===0){
+      ctx.strokeStyle='rgba(201,168,76,0.8)'; ctx.lineWidth=0.8;
+      ctx.fillStyle='rgba(201,168,76,0.12)';
+      ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx2,by2); ctx.lineTo(cx2,cy2); ctx.closePath();
+      ctx.fill(); ctx.stroke(); return;
+    }
+    const mx1=(ax+bx2)/2,my1=(ay+by2)/2;
+    const mx2=(bx2+cx2)/2,my2=(by2+cy2)/2;
+    const mx3=(ax+cx2)/2,my3=(ay+cy2)/2;
+    tri(ax,ay,mx1,my1,mx3,my3,depth-1);
+    tri(mx1,my1,bx2,by2,mx2,my2,depth-1);
+    tri(mx3,my3,mx2,my2,cx2,cy2,depth-1);
+  }
+  tri(bx+size/2,by-size*0.866,bx,by,bx+size,by,iter);
+  // label physical size
+  const elemSize=physMM/Math.pow(2,iter);
+  ctx.fillStyle='rgba(238,212,163,0.6)'; ctx.font='9px Share Tech Mono';
+  ctx.fillText('Element size: '+elemSize.toFixed(2)+'mm', bx, by+16);
+}
+
+function drawCarpet(ctx,W,H,iter,physMM){
+  const size=Math.min(W-40,H-40);
+  const ox=(W-size)/2, oy=(H-size)/2;
+  function carpet(x,y,s,depth){
+    if(depth===0){
+      ctx.strokeStyle='rgba(201,168,76,0.6)'; ctx.lineWidth=0.5;
+      ctx.fillStyle='rgba(201,168,76,0.08)';
+      ctx.fillRect(x,y,s,s); ctx.strokeRect(x,y,s,s); return;
+    }
+    const s3=s/3;
+    for(let i=0;i<3;i++) for(let j=0;j<3;j++){
+      if(i===1&&j===1) continue;
+      carpet(x+i*s3,y+j*s3,s3,depth-1);
+    }
+  }
+  carpet(ox,oy,size,Math.min(iter,4));
+  const elemSize=physMM/Math.pow(3,iter);
+  ctx.fillStyle='rgba(238,212,163,0.6)'; ctx.font='9px Share Tech Mono';
+  ctx.fillText('Element size: '+elemSize.toFixed(3)+'mm',ox,oy+size+16);
+}
+
+function drawKoch(ctx,W,H,iter,physMM){
+  const size=Math.min(W-60,H-80);
+  const cx=W/2, startY=H*0.35;
+  function kochSegment(x1,y1,x2,y2,depth){
+    if(depth===0){
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); return;
+    }
+    const dx=(x2-x1)/3, dy=(y2-y1)/3;
+    const ax=x1+dx,ay=y1+dy;
+    const bx=x2-dx,by=y2-dy;
+    const angle=Math.atan2(dy,dx)-Math.PI/3;
+    const len=Math.sqrt(dx*dx+dy*dy);
+    const px=ax+len*Math.cos(angle), py=ay+len*Math.sin(angle);
+    kochSegment(x1,y1,ax,ay,depth-1);
+    kochSegment(ax,ay,px,py,depth-1);
+    kochSegment(px,py,bx,by,depth-1);
+    kochSegment(bx,by,x2,y2,depth-1);
+  }
+  ctx.strokeStyle='rgba(201,168,76,0.7)'; ctx.lineWidth=0.8;
+  ctx.shadowColor='rgba(201,168,76,0.3)'; ctx.shadowBlur=3;
+  const r=size*0.38;
+  const p1=[cx,startY-r], p2=[cx+r*0.866,startY+r/2], p3=[cx-r*0.866,startY+r/2];
+  kochSegment(p1[0],p1[1],p2[0],p2[1],Math.min(iter,5));
+  kochSegment(p2[0],p2[1],p3[0],p3[1],Math.min(iter,5));
+  kochSegment(p3[0],p3[1],p1[0],p1[1],Math.min(iter,5));
+  ctx.shadowBlur=0;
+  const edgeLen=physMM/Math.pow(3,iter);
+  ctx.fillStyle='rgba(238,212,163,0.6)'; ctx.font='9px Share Tech Mono';
+  ctx.fillText('Edge segment: '+edgeLen.toFixed(3)+'mm | Perimeter: inf',cx-80,H-20);
+}
+
+function drawMandelbrot(ctx,W,H,maxIter){
+  const iData=ctx.createImageData(W,H);
+  const iterations=Math.min(maxIter*12+20,100);
+  for(let px=0;px<W;px++) for(let py=0;py<H;py++){
+    const x0=(px/W)*3.5-2.5, y0=(py/H)*2.5-1.25;
+    let x=0,y=0,i=0;
+    while(x*x+y*y<=4&&i<iterations){const xt=x*x-y*y+x0;y=2*x*y+y0;x=xt;i++;}
+    const idx=(py*W+px)*4;
+    if(i===iterations){iData.data[idx]=8;iData.data[idx+1]=15;iData.data[idx+2]=40;iData.data[idx+3]=255;}
+    else{
+      const t=i/iterations;
+      iData.data[idx]=Math.floor(201*t*t);
+      iData.data[idx+1]=Math.floor(168*t);
+      iData.data[idx+2]=Math.floor(76*(1-t));
+      iData.data[idx+3]=255;
+    }
+  }
+  ctx.putImageData(iData,0,0);
+  ctx.strokeStyle='rgba(238,212,163,0.3)'; ctx.lineWidth=0.5;
+  ctx.strokeRect(0,0,W,H);
+}
+
+function updateFractalStats(iter, physMM){
+  let elements, elemSize, dim, reduction;
+  if(currentFractal==='sierpinski'){
+    elements=Math.pow(3,iter); elemSize=physMM/Math.pow(2,iter); dim=1.585; reduction='1:2 (side)';
+  } else if(currentFractal==='carpet'){
+    elements=Math.pow(8,iter); elemSize=physMM/Math.pow(3,iter); dim=1.893; reduction='1:3 (side)';
+  } else if(currentFractal==='koch'){
+    elements=3*Math.pow(4,iter); elemSize=physMM/Math.pow(3,iter); dim=1.262; reduction='1:3 (segment)';
+  } else {
+    elements='inf'; elemSize=0; dim='2.000'; reduction='N/A';
+  }
+  document.getElementById('fr-elements').textContent=typeof elements==='number'?elements.toLocaleString():elements;
+  document.getElementById('fr-dimension').textContent=dim;
+  document.getElementById('fr-scale').textContent=elemSize>0?elemSize.toFixed(3)+' mm':'-';
+  document.getElementById('fr-reduction').textContent=reduction;
+}
+
+function buildFractalTable(iter, physMM){
+  if(currentFractal==='mandelbrot'){
+    document.getElementById('fractalTbody').innerHTML='<tr><td colspan="5" style="color:rgba(201,168,76,0.4);">Mandelbrot set has infinite detail — no discrete iteration table</td></tr>';
+    return;
+  }
+  const rows=[];
+  for(let i=0;i<=Math.min(iter,8);i++){
+    let elements, elemSize, totalEdge, dim;
+    if(currentFractal==='sierpinski'){
+      // n triangles = 3^n, each side = physMM/2^n
+      elements = Math.pow(3,i);
+      elemSize = physMM / Math.pow(2,i);
+      // total perimeter = 3^(i+1) * elemSize = 3 * physMM * (3/2)^i
+      totalEdge = 3 * physMM * Math.pow(1.5,i);
+      dim = 1.585;
+    } else if(currentFractal==='carpet'){
+      // n squares = 8^n, each side = physMM/3^n
+      elements = Math.pow(8,i);
+      elemSize = physMM / Math.pow(3,i);
+      // total perimeter = 8^n * 4 * elemSize
+      totalEdge = Math.pow(8,i) * 4 * elemSize;
+      dim = 1.893;
+    } else if(currentFractal==='koch'){
+      // n segments = 3*4^n, each length = physMM/3^n
+      elements = 3 * Math.pow(4,i);
+      elemSize = physMM / Math.pow(3,i);
+      // total perimeter = elements * elemSize = 3 * physMM * (4/3)^n
+      totalEdge = 3 * physMM * Math.pow(4/3,i);
+      dim = 1.262;
+    }
+    const phiAligned=Math.abs(elemSize/physMM-1/PHI)<0.02||Math.abs(elemSize/physMM-1/(PHI*PHI))<0.02;
+    rows.push({i,elements,elemSize,totalEdge,phiAligned});
+  }
+  document.getElementById('fractalTbody').innerHTML=rows.map(r=>`
+    <tr class="${r.i===iter?'base-row':''}">
+      <td class="freq-val">${r.i}</td>
+      <td>${r.elements.toLocaleString()}</td>
+      <td class="mm-val">${r.elemSize.toFixed(3)} mm</td>
+      <td>${formatLength(r.totalEdge/1000)}</td>
+      <td>${r.phiAligned?'<span class="match">phi ratio!</span>':'—'}</td>
+    </tr>`).join('');
+}
+
+function exportFractalSVG(){
+  const iter=parseInt(document.getElementById('frac-iter').value)||3;
+  const physMM=parseFloat(document.getElementById('frac-size').value)||500;
+  let svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+physMM+'mm" height="'+physMM+'mm" viewBox="0 0 '+physMM+' '+physMM+'">';
+  svg+='<rect width="100%" height="100%" fill="#080f28"/>';
+  // Simple sierpinski for SVG export
+  function svgTri(ax,ay,bx,by,cx,cy,depth){
+    if(depth===0){svg+='<polygon points="'+ax+','+ay+' '+bx+','+by+' '+cx+','+cy+'" fill="rgba(201,168,76,0.15)" stroke="#C9A84C" stroke-width="0.5"/>'; return;}
+    const mx1=(ax+bx)/2,my1=(ay+by)/2,mx2=(bx+cx)/2,my2=(by+cy)/2,mx3=(ax+cx)/2,my3=(ay+cy)/2;
+    svgTri(ax,ay,mx1,my1,mx3,my3,depth-1);svgTri(mx1,my1,bx,by,mx2,my2,depth-1);svgTri(mx3,my3,mx2,my2,cx,cy,depth-1);
+  }
+  const s=physMM*0.9,ox=physMM*0.05;
+  svgTri(ox+s/2,ox,ox,ox+s*0.866,ox+s,ox+s*0.866,Math.min(iter,5));
+  svg+='<text x="4" y="12" fill="#C9A84C" font-size="6" font-family="monospace">Allistar Center - Sierpinski Gasket Iter '+iter+' - '+physMM+'mm</text>';
+  svg+='</svg>';
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='Allistar_Fractal_'+currentFractal+'_iter'+iter+'_'+physMM+'mm.svg'; a.click();
+  document.getElementById('fractalStatus').textContent='SVG exported: '+physMM+'mm x '+physMM+'mm';
+}
+
+function exportFractalPDF(){
+  if(typeof window.jspdf==='undefined') return;
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const pageW=doc.internal.pageSize.getWidth();
+  doc.setFillColor(8,15,40);doc.rect(0,0,pageW,297,'F');
+  doc.setDrawColor(201,168,76);doc.setLineWidth(0.8);doc.line(10,8,pageW-10,8);
+  doc.setTextColor(201,168,76);doc.setFont('helvetica','bold');doc.setFontSize(14);
+  doc.text('ALLISTAR CENTER - FRACTAL GEOMETRY',pageW/2,18,{align:'center'});
+  doc.setFontSize(8);doc.setTextColor(178,147,107);
+  const iter=parseInt(document.getElementById('frac-iter').value)||3;
+  const physMM=parseFloat(document.getElementById('frac-size').value)||500;
+  doc.text(currentFractal.toUpperCase()+' | Iteration '+iter+' | Physical size: '+physMM+'mm',pageW/2,24,{align:'center'});
+  const fc=document.getElementById('fractalCanvas');
+  try{doc.addImage(fc.toDataURL('image/png'),'PNG',10,30,pageW-20,(pageW-20)*360/fc.width);}catch(e){}
+  const y=30+(pageW-20)*360/fc.width+8;
+  doc.setDrawColor(138,104,48);doc.setLineWidth(0.3);doc.line(10,y,pageW-10,y);
+  doc.setTextColor(201,168,76);doc.setFontSize(7);doc.text('ITERATION TABLE',14,y+6);
+  doc.setTextColor(224,216,192);
+  const trows=document.querySelectorAll('#fractalTbody tr');
+  trows.forEach((tr,i)=>{
+    const cells=[...tr.querySelectorAll('td')].map(td=>td.textContent.trim());
+    doc.text(cells.join('   |   ').slice(0,80),14,y+12+i*6);
+  });
+  doc.setDrawColor(201,168,76);doc.setLineWidth(0.3);doc.line(10,282,pageW-10,282);
+  doc.setTextColor(178,147,107);doc.setFontSize(7);doc.text('Resonance Is the Foundation | allistarcenter.com',pageW/2,287,{align:'center'});
+  doc.save('Allistar_Fractal_'+currentFractal+'_iter'+iter+'.pdf');
+}
+
+// ── Update switchTab to handle new tabs ──
+function switchTab(id){
+  const allTabs=['geo','freq','cubit','resonant','geometry','material','fractal','platonic','pyramid'];
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',allTabs[i]===id));
+  document.querySelectorAll('.pc').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(id==='geo') calcGeo();
+  if(id==='freq') calcFreq();
+  if(id==='cubit') calcCubit();
+  if(id==='resonant') calcResonant();
+  if(id==='geometry'){ loadSacredForm(currentSacredForm, document.querySelector('#geoFormBtns .preset-btn.sel')||document.querySelector('#geoFormBtns .preset-btn')); }
+  if(id==='material') calcWavelength();
+  if(id==='fractal') drawFractal();
+  if(id==='platonic'){ setTimeout(()=>{ loadPlatonic(currentPlatonic, document.querySelector('#platonicBtns .preset-btn.sel')||document.querySelector('#platonicBtns .preset-btn')); }, 50); }
+  if(id==='pyramid'){ setTimeout(()=>calcPyramid(), 50); }
+}
+
+// ── Init new tabs on load ──
+const _origLoad = window.onload;
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    calcGeo();
+    calcResonant();
+    calcWavelength();
+    loadSacredForm('flower', document.querySelector('#geoFormBtns .preset-btn'));
+    setTimeout(()=>{
+      drawFractal();
+      loadPlatonic('tetra', document.querySelector('#platonicBtns .preset-btn.sel'));
+    }, 200);
+  }, 300);
+});
+
+
+
+// ═══════════════════════════════════════════
+// PLATONIC SOLIDS — CLEAN 3D VISUALIZER
+// ═══════════════════════════════════════════
+let currentPlatonic = 'tetra';
+let platonicAngle = 0.4;
+let platonicAngleX = 0.4;
+let platonicAnimId = null;
+let platonicAnimating = false;
+let renderMode = 'solid'; // 'solid', 'wire', 'both'
+let isDragging = false, lastMouseX = 0, lastMouseY = 0;
+
+const phi = 1.6180339887;
+
+// Face colors per solid for solid mode
+const FACE_COLORS = {
+  tetra:  ['rgba(201,120,40,', 'rgba(180,100,30,', 'rgba(160,80,20,',  'rgba(220,140,50,'],
+  cube:   ['rgba(40,100,201,', 'rgba(30,80,180,',  'rgba(20,60,160,',  'rgba(50,120,220,', 'rgba(35,90,190,', 'rgba(45,110,210,'],
+  octa:   ['rgba(40,180,120,', 'rgba(30,160,100,', 'rgba(50,200,140,', 'rgba(20,140,80,',  'rgba(60,190,130,','rgba(35,170,110,','rgba(45,195,125,','rgba(25,150,90,'],
+  dodeca: Array(12).fill(0).map((_,i)=>`rgba(${150+i*5},${80+i*8},${200+i*4},`),
+  icosa:  Array(20).fill(0).map((_,i)=>`rgba(${201-i*3},${168-i*4},${40+i*6},`)
+};
+
+const PLATONIC = {
+  tetra:{
+    name:'Tetrahedron', faces:4, verts:4, edges:6, face:'Triangle',
+    desc:'4 equilateral triangular faces. Simplest Platonic solid, represents FIRE in classical tradition. Self-dual — its dual is another tetrahedron. Two interlocked tetrahedra form the Star Tetrahedron (Merkaba). Circumradius/inradius = 3.',
+    phi:'Two nested tetrahedra rotated 60° form the Stella Octangula — your Space-Time Antenna geometry.',
+    inR: a=>a/(2*Math.sqrt(6)), midR: a=>a/Math.sqrt(8), circumR: a=>a*Math.sqrt(6)/4,
+    surfaceArea: a=>Math.sqrt(3)*a*a, volume: a=>a*a*a*Math.sqrt(2)/12,
+    buildVerts(s){
+      const h=s*Math.sqrt(2/3), r=s/Math.sqrt(3);
+      return [[0,h*0.75,0],[-r,-h*0.25,0],[r*0.5,-h*0.25,r*0.866],[r*0.5,-h*0.25,-r*0.866]];
+    },
+    faceIdx:[[0,1,2],[0,2,3],[0,3,1],[1,3,2]]
+  },
+  cube:{
+    name:'Cube (Hexahedron)', faces:6, verts:8, edges:12, face:'Square',
+    desc:'6 square faces. Dual of the octahedron. Represents EARTH — stable crystalline structure. Space diagonal to edge = sqrt(3). Connecting alternate vertices traces a tetrahedron inside.',
+    phi:'Face diagonal/edge = sqrt(2). Space diagonal/edge = sqrt(3). These relate through phi: sqrt(5) = 2phi - 1.',
+    inR: a=>a/2, midR: a=>a/Math.sqrt(2)/Math.sqrt(2)*Math.sqrt(2), circumR: a=>a*Math.sqrt(3)/2,
+    surfaceArea: a=>6*a*a, volume: a=>a*a*a,
+    buildVerts(s){
+      const h=s/2;
+      return [[-h,-h,-h],[h,-h,-h],[h,h,-h],[-h,h,-h],[-h,-h,h],[h,-h,h],[h,h,h],[-h,h,h]];
+    },
+    faceIdx:[[0,1,2,3],[4,5,6,7],[0,1,5,4],[2,3,7,6],[1,2,6,5],[0,3,7,4]]
+  },
+  octa:{
+    name:'Octahedron', faces:8, verts:6, edges:12, face:'Triangle',
+    desc:'8 equilateral triangular faces. Dual of the cube. Represents AIR. Two square pyramids joined at base. The jitterbug transform (Fuller) collapses Vector Equilibrium into octahedron — direct S/T Field connection.',
+    phi:'Circumradius/edge = 1/sqrt(2) = 0.707. Edge ratio between octahedron and icosahedron sharing a circumsphere = phi.',
+    inR: a=>a/Math.sqrt(6), midR: a=>a/2, circumR: a=>a/Math.sqrt(2),
+    surfaceArea: a=>2*Math.sqrt(3)*a*a, volume: a=>a*a*a*Math.sqrt(2)/3,
+    buildVerts(s){
+      const r=s/Math.sqrt(2);
+      return [[r,0,0],[-r,0,0],[0,r,0],[0,-r,0],[0,0,r],[0,0,-r]];
+    },
+    faceIdx:[[0,2,4],[0,4,3],[0,3,5],[0,5,2],[1,4,2],[1,2,5],[1,5,3],[1,3,4]]
+  },
+  dodeca:{
+    name:'Dodecahedron', faces:12, verts:20, edges:30, face:'Pentagon',
+    desc:'12 regular pentagonal faces. Dual of icosahedron. Represents the COSMOS. Each face is a regular pentagon — phi IS the diagonal/side ratio. Plato said this is the shape the universe uses.',
+    phi:'DIRECT PHI: every pentagonal face has diagonal/side = phi = 1.618. Most phi-rich Platonic solid.',
+    inR: a=>a/2*Math.sqrt(5/2+11/Math.sqrt(5)), midR: a=>a*(1+Math.sqrt(5))/4, circumR: a=>a*Math.sqrt(3)*(1+Math.sqrt(5))/4,
+    surfaceArea: a=>3*Math.sqrt(25+10*Math.sqrt(5))*a*a, volume: a=>a*a*a*(15+7*Math.sqrt(5))/4,
+    buildVerts(s){
+      // Standard dodecahedron: edge = 2/phi * s_unit, so scale by s*(phi/2)
+      const sc = s/1.2360679775; // normalize to edge length s
+      const a=sc*1, b=sc*1.6180339887, c=sc/1.6180339887;
+      const pts=[];
+      for(const sx of [1,-1]) for(const sy of [1,-1]) for(const sz of [1,-1]) pts.push([sx*a,sy*a,sz*a]);
+      for(const sy of [1,-1]) for(const sz of [1,-1]) pts.push([0,sy*c,sz*b]);
+      for(const sx of [1,-1]) for(const sy of [1,-1]) pts.push([sx*c,sy*b,0]);
+      for(const sx of [1,-1]) for(const sz of [1,-1]) pts.push([sx*b,0,sz*c]);
+      return pts;
+    },
+    faceIdx:[
+      [0,8,10,2,16],
+      [0,16,17,1,12],
+      [0,12,14,4,8],
+      [4,14,5,19,18],
+      [4,18,6,10,8],
+      [2,10,6,15,13],
+      [1,17,3,11,9],
+      [1,9,5,14,12],
+      [3,13,15,7,11],
+      [2,13,3,17,16],
+      [5,9,11,7,19],
+      [6,18,19,7,15]
+    ]
+  },
+  icosa:{
+    name:'Icosahedron', faces:20, verts:12, edges:30, face:'Triangle',
+    desc:'20 equilateral triangular faces. Dual of dodecahedron. Represents WATER. 12 vertices sit at corners of 3 mutually perpendicular golden rectangles (phi:1 ratio). Jitterbug contraction of Vector Equilibrium.',
+    phi:'The 3 golden rectangles have sides ratio phi:1. Circumradius/edge = sin(72°) = 0.951.',
+    inR: a=>a*phi/(2*Math.sqrt(3)), midR: a=>a*phi/2, circumR: a=>a*phi/Math.sqrt(4-phi*phi+2),
+    surfaceArea: a=>5*Math.sqrt(3)*a*a, volume: a=>a*a*a*5*(3+Math.sqrt(5))/12,
+    buildVerts(s){
+      // 3 mutually perpendicular golden rectangles
+      // Vertices: (0, +-1, +-phi) and cyclic permutations, scaled to edge s
+      const sc = s/2; // edge length = 2 in unit coords
+      const pts=[];
+      for(const sy of [1,-1]) for(const sz of [1,-1]) pts.push([0, sy*sc, sz*sc*phi]);
+      for(const sx of [1,-1]) for(const sz of [1,-1]) pts.push([sx*sc*phi, 0, sz*sc]);
+      for(const sx of [1,-1]) for(const sy of [1,-1]) pts.push([sx*sc, sy*sc*phi, 0]);
+      return pts;
+    },
+    faceIdx:[
+      [0,2,4],[0,4,8],[0,8,10],[0,10,6],[0,6,2],
+      [3,1,5],[3,5,9],[3,9,11],[3,11,7],[3,7,1],
+      [2,9,4],[4,5,8],[8,1,10],[10,7,6],[6,11,2],
+      [9,2,11],[5,4,9],[1,8,5],[7,10,1],[11,6,7]
+    ]
+  }
+};
+
+function setRenderMode(mode, btn){
+  renderMode = mode;
+  document.querySelectorAll('.mode-tog button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  drawPlatonic();
+}
+
+function updatePlatonic(){ loadPlatonic(currentPlatonic, null); }
+
+function loadPlatonic(key, btn){
+  if(!PLATONIC[key]) return;
+  currentPlatonic = key;
+  document.querySelectorAll('#platonicBtns .preset-btn').forEach(b=>b.classList.remove('sel'));
+  if(btn) btn.classList.add('sel');
+  const p = PLATONIC[key];
+  const edge = parseFloat(document.getElementById('plat-edge').value)||100;
+
+  // Description
+  document.getElementById('platonicDesc').innerHTML =
+    '<strong style="color:var(--g-base);font-size:13px;">'+p.name+'</strong>'
+    +' &nbsp;·&nbsp; '+p.faces+' faces &nbsp;·&nbsp; '+p.verts+' vertices &nbsp;·&nbsp; '+p.edges+' edges &nbsp;·&nbsp; Face: '+p.face+'<br>'
+    +p.desc+'<br>'
+    +'<span style="color:var(--g-base);font-size:11px;">PHI: '+p.phi+'</span>';
+
+  // Stats
+  document.getElementById('pl-faces').textContent = p.faces;
+  document.getElementById('pl-vertices').textContent = p.verts;
+  document.getElementById('pl-edges').textContent = p.edges;
+  document.getElementById('pl-inradius').textContent = p.inR(edge).toFixed(2);
+  document.getElementById('pl-circumradius').textContent = p.circumR(edge).toFixed(2);
+
+  // Dimension table
+  const inR=p.inR(edge), midR=p.midR(edge), circumR=p.circumR(edge);
+  const sa=p.surfaceArea(edge), vol=p.volume(edge);
+  const rows=[
+    {dim:'Edge length',            formula:'a',           val:edge.toFixed(2)+' mm',       phi:'base unit'},
+    {dim:'Inradius (insphere)',     formula:'r_in',        val:inR.toFixed(3)+' mm',         phi:(inR/edge).toFixed(4)+' × edge'},
+    {dim:'Midradius',              formula:'r_mid',       val:midR.toFixed(3)+' mm',        phi:(midR/edge).toFixed(4)+' × edge'},
+    {dim:'Circumradius',           formula:'r_circ',      val:circumR.toFixed(3)+' mm',     phi:(circumR/edge).toFixed(4)+' × edge'},
+    {dim:'phi × edge',             formula:'a × 1.618',   val:(edge*phi).toFixed(3)+' mm',  phi:'scale up by phi'},
+    {dim:'edge / phi',             formula:'a / 1.618',   val:(edge/phi).toFixed(3)+' mm',  phi:'scale down by phi'},
+    {dim:'Surface area',           formula:'N faces',     val:sa.toFixed(2)+' mm²',         phi:'total area'},
+    {dim:'Volume',                 formula:'formula',     val:vol.toFixed(2)+' mm³',        phi:'total volume'},
+    {dim:'Circumradius/Inradius',  formula:'r_c / r_in', val:(circumR/inR).toFixed(4),     phi: Math.abs(circumR/inR - phi*phi) < 0.1 ? '≈ phi² !' : Math.abs(circumR/inR - 3) < 0.1 ? '= 3 exactly' : (circumR/inR).toFixed(4)},
+  ];
+  document.getElementById('platonicTbody').innerHTML = rows.map(r=>`
+    <tr>
+      <td style="color:var(--g-hi);">${r.dim}</td>
+      <td class="step">${r.formula}</td>
+      <td class="mm-val">${r.val}</td>
+      <td style="color:${r.phi.includes('phi')||r.phi.includes('1.618')?'#60ff80':'rgba(200,220,255,0.55)'};">${r.phi}</td>
+    </tr>`).join('');
+
+  drawPlatonic();
+}
+
+// ── 3D PROJECTION ──
+function project(x, y, z, scale, cx, cy){
+  const cosX=Math.cos(platonicAngleX), sinX=Math.sin(platonicAngleX);
+  const cosY=Math.cos(platonicAngle),  sinY=Math.sin(platonicAngle);
+  // Rotate Y axis
+  const x1 = x*cosY - z*sinY;
+  const z1 = x*sinY + z*cosY;
+  // Rotate X axis
+  const y2 = y*cosX - z1*sinX;
+  const z2 = y*sinX + z1*cosX;
+  // Perspective
+  const fov = 500;
+  const dist = fov / (fov + z2 + 300);
+  return { sx: cx + x1*scale*dist, sy: cy + y2*scale*dist, z: z2 };
+}
+
+function drawPlatonic(){
+  const canvas = document.getElementById('platonicCanvas');
+  if(!canvas) return;
+  const W = canvas.offsetWidth || 900;
+  canvas.width = W; canvas.height = 360;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, 360);
+
+  const p = PLATONIC[currentPlatonic];
+  if(!p) return;
+  const edge = parseFloat(document.getElementById('plat-edge').value)||100;
+  const scale = Math.min(W, 360) * 0.32;
+  const cx = W/2, cy = 185;
+
+  let rawVerts;
+  try { rawVerts = p.buildVerts(edge); } catch(e){ return; }
+
+  // Normalize scale: divide by edge so rendering is consistent across sizes
+  const proj = rawVerts.map(([x,y,z]) => project(x, y, z, scale/edge, cx, cy));
+
+  // Sort faces back-to-front (painter's algorithm)
+  const sorted = p.faceIdx
+    .map((face, i) => {
+      const validFace = face.filter(vi => vi < proj.length);
+      if(validFace.length < 3) return null;
+      const avgZ = validFace.reduce((s,vi) => s + proj[vi].z, 0) / validFace.length;
+      return { i, face: validFace, avgZ };
+    })
+    .filter(Boolean)
+    .sort((a,b) => b.avgZ - a.avgZ);
+
+  const faceColors = FACE_COLORS[currentPlatonic] || FACE_COLORS.tetra;
+
+  sorted.forEach(({ i, face, avgZ }) => {
+    const pts = face.map(vi => proj[vi]);
+    // Lighting: normalize avgZ to [0,1]
+    const light = Math.max(0, Math.min(1, (avgZ + scale) / (scale * 2)));
+
+    if(renderMode === 'solid' || renderMode === 'both'){
+      const baseColor = faceColors[i % faceColors.length];
+      ctx.fillStyle = baseColor + (0.5 + light*0.5) + ')';
+      ctx.beginPath();
+      ctx.moveTo(pts[0].sx, pts[0].sy);
+      for(let k=1; k<pts.length; k++) ctx.lineTo(pts[k].sx, pts[k].sy);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    if(renderMode === 'wire' || renderMode === 'both'){
+      const edgeAlpha = renderMode === 'both' ? 0.9 : (0.4 + light*0.6);
+      ctx.strokeStyle = 'rgba(201,168,76,' + edgeAlpha + ')';
+      ctx.lineWidth = renderMode === 'wire' ? 1.5 : 0.8;
+      if(renderMode === 'wire'){
+        ctx.shadowColor = 'rgba(201,168,76,0.35)';
+        ctx.shadowBlur = 4;
+      }
+      ctx.beginPath();
+      ctx.moveTo(pts[0].sx, pts[0].sy);
+      for(let k=1; k<pts.length; k++) ctx.lineTo(pts[k].sx, pts[k].sy);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+  });
+
+  // Draw vertices
+  proj.forEach(pt => {
+    ctx.fillStyle = 'rgba(238,212,163,0.9)';
+    ctx.shadowColor = 'rgba(238,212,163,0.5)';
+    ctx.shadowBlur = 4;
+    ctx.beginPath();
+    ctx.arc(pt.sx, pt.sy, renderMode==='wire'?3:2, 0, Math.PI*2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  });
+
+  // Reference spheres (wireframe only for clarity)
+  const inR = p.inR(edge), circumR = p.circumR(edge);
+  if(renderMode === 'wire'){
+    ctx.strokeStyle = 'rgba(96,200,255,0.2)'; ctx.lineWidth=0.5; ctx.setLineDash([3,4]);
+    ctx.beginPath(); ctx.arc(cx, cy, inR*scale/edge, 0, Math.PI*2); ctx.stroke();
+    ctx.strokeStyle = 'rgba(238,212,163,0.12)';
+    ctx.beginPath(); ctx.arc(cx, cy, circumR*scale/edge, 0, Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Corner label
+  ctx.fillStyle = 'rgba(201,168,76,0.3)'; ctx.font = '9px Share Tech Mono';
+  ctx.fillText(p.name+' | edge '+edge+'mm | '+renderMode+' | drag to rotate', 8, 16);
+}
+
+// ── ROTATION ──
+function rotatePlatonic(dir){ platonicAngle += dir*0.25; drawPlatonic(); }
+
+function togglePlatonicAnim(){
+  platonicAnimating = !platonicAnimating;
+  const btn = document.getElementById('animBtn');
+  btn.textContent = platonicAnimating ? '⏸ Stop' : '▶ Animate';
+  if(platonicAnimating) animPlatonicLoop();
+  else if(platonicAnimId){ cancelAnimationFrame(platonicAnimId); platonicAnimId=null; }
+}
+
+function animPlatonicLoop(){
+  if(!platonicAnimating) return;
+  platonicAngle += 0.01;
+  drawPlatonic();
+  platonicAnimId = requestAnimationFrame(animPlatonicLoop);
+}
+
+// ── MOUSE / TOUCH DRAG ──
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const canvas = document.getElementById('platonicCanvas');
+    if(!canvas) return;
+    canvas.style.cursor = 'grab';
+
+    canvas.addEventListener('mousedown', e => {
+      isDragging=true; lastMouseX=e.clientX; lastMouseY=e.clientY;
+      canvas.style.cursor='grabbing';
+    });
+    window.addEventListener('mouseup', () => { isDragging=false; if(canvas) canvas.style.cursor='grab'; });
+    window.addEventListener('mousemove', e => {
+      if(!isDragging) return;
+      platonicAngle  += (e.clientX - lastMouseX) * 0.012;
+      platonicAngleX += (e.clientY - lastMouseY) * 0.012;
+      lastMouseX=e.clientX; lastMouseY=e.clientY;
+      drawPlatonic();
+    });
+    canvas.addEventListener('touchstart', e=>{
+      isDragging=true; lastMouseX=e.touches[0].clientX; lastMouseY=e.touches[0].clientY;
+    },{passive:true});
+    window.addEventListener('touchend', ()=>isDragging=false);
+    window.addEventListener('touchmove', e=>{
+      if(!isDragging) return;
+      platonicAngle  += (e.touches[0].clientX-lastMouseX)*0.012;
+      platonicAngleX += (e.touches[0].clientY-lastMouseY)*0.012;
+      lastMouseX=e.touches[0].clientX; lastMouseY=e.touches[0].clientY;
+      drawPlatonic();
+    },{passive:true});
+  }, 200);
+});
+
+
+// ─── PDF: Frequency Cascade ───
+function exportFreqPDF(){
+  if(typeof window.jspdf==='undefined') return;
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const pageW=doc.internal.pageSize.getWidth();
+  const base=parseFloat(document.getElementById('freqBase').value)||7.83;
+  const now=new Date().toISOString().replace('T',' ').slice(0,19);
+  doc.setFillColor(8,15,40);doc.rect(0,0,pageW,297,'F');
+  doc.setDrawColor(201,168,76);doc.setLineWidth(0.8);doc.line(10,8,pageW-10,8);
+  doc.setTextColor(201,168,76);doc.setFont('helvetica','bold');doc.setFontSize(14);
+  doc.text('ALLISTAR CENTER - PHI FREQUENCY CASCADE',pageW/2,18,{align:'center'});
+  doc.setFontSize(8);doc.setTextColor(178,147,107);
+  doc.text('Base: '+base+' Hz  |  '+now+' UTC',pageW/2,24,{align:'center'});
+  doc.setDrawColor(138,104,48);doc.setLineWidth(0.3);doc.line(10,28,pageW-10,28);
+  const fc=document.getElementById('freqCanvas');
+  try{doc.addImage(fc.toDataURL('image/png'),'PNG',10,32,pageW-20,40);}catch(e){}
+  doc.setFillColor(0,8,30);doc.setDrawColor(138,104,48);doc.setLineWidth(0.3);doc.rect(10,76,pageW-20,8,'FD');
+  doc.setTextColor(201,168,76);doc.setFontSize(7);
+  ['STEP','FREQ','PERIOD (us)','WAVELENGTH','NOTES'].forEach((h,i)=>doc.text(h,14+i*38,82));
+  let y=88;
+  currentFreqData.forEach(r=>{
+    if(y>270){doc.addPage();doc.setFillColor(8,15,40);doc.rect(0,0,pageW,297,'F');y=20;}
+    if(r.isBase){doc.setFillColor(15,25,60);doc.rect(10,y-4,pageW-20,7,'F');}
+    doc.setTextColor(r.isBase?238:180,r.isBase?212:200,r.isBase?163:220);doc.setFontSize(7);
+    doc.text('phi^'+r.n,14,y);
+    doc.setTextColor(96,200,255);doc.text(r.freqStr.slice(0,14),44,y);
+    doc.setTextColor(180,200,220);doc.text(r.period.toFixed(2),90,y);
+    doc.text(r.wavelength>=1?r.wavelength.toFixed(3)+' m':(r.wavelength*100).toFixed(2)+' cm',120,y);
+    doc.setTextColor(r.note?96:100,r.note?255:160,r.note?120:220);
+    doc.text(r.note||'',160,y);
+    y+=7;
+  });
+  doc.setDrawColor(201,168,76);doc.setLineWidth(0.3);doc.line(10,284,pageW-10,284);
+  doc.setTextColor(178,147,107);doc.setFontSize(7);
+  doc.text('Resonance Is the Foundation | allistarcenter.com',pageW/2,289,{align:'center'});
+  doc.save('Allistar_PhiFrequency_'+base+'Hz_'+now.slice(0,10)+'.pdf');
+  document.getElementById('freqStatus').textContent='PDF exported';
+}
+
+// ─── PDF: Royal Cubit ───
+function exportCubitPDF(){
+  if(typeof window.jspdf==='undefined') return;
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const pageW=doc.internal.pageSize.getWidth();
+  const val=parseFloat(document.getElementById('cubitInput').value)||70;
+  const mode=document.getElementById('cubitFrom').value;
+  const mm=mode==='mm'?val:val*523.6;
+  const now=new Date().toISOString().replace('T',' ').slice(0,19);
+  doc.setFillColor(8,15,40);doc.rect(0,0,pageW,297,'F');
+  doc.setDrawColor(201,168,76);doc.setLineWidth(0.8);doc.line(10,8,pageW-10,8);
+  doc.setTextColor(201,168,76);doc.setFont('helvetica','bold');doc.setFontSize(14);
+  doc.text('ALLISTAR CENTER - ROYAL CUBIT PHI CASCADE',pageW/2,18,{align:'center'});
+  doc.setFontSize(8);doc.setTextColor(178,147,107);
+  doc.text('Base: '+mm.toFixed(2)+'mm = '+(mm/523.6).toFixed(6)+' cubits  |  '+now,pageW/2,24,{align:'center'});
+  doc.setDrawColor(138,104,48);doc.setLineWidth(0.3);doc.line(10,28,pageW-10,28);
+  const cc=document.getElementById('cubitCanvas');
+  try{doc.addImage(cc.toDataURL('image/png'),'PNG',10,32,pageW-20,50);}catch(e){}
+  doc.setFillColor(0,8,30);doc.setDrawColor(138,104,48);doc.setLineWidth(0.3);doc.rect(10,86,pageW-20,8,'FD');
+  doc.setTextColor(201,168,76);doc.setFontSize(7);
+  ['STEP','MULTIPLIER','mm','ROYAL CUBITS','SIGNIFICANCE'].forEach((h,i)=>doc.text(h,14+i*36,92));
+  let y=100;
+  document.querySelectorAll('#cubitTbody tr').forEach(tr=>{
+    if(y>274){doc.addPage();doc.setFillColor(8,15,40);doc.rect(0,0,pageW,297,'F');y=20;}
+    const cells=[...tr.querySelectorAll('td')].map(td=>td.textContent.trim());
+    const isBase=tr.classList.contains('base-row');
+    if(isBase){doc.setFillColor(15,25,60);doc.rect(10,y-4,pageW-20,7,'F');}
+    doc.setTextColor(isBase?238:180,isBase?212:200,isBase?163:220);doc.setFontSize(7);
+    cells.forEach((c,i)=>doc.text(c.slice(0,16),14+i*36,y));
+    y+=7;
+  });
+  doc.setDrawColor(201,168,76);doc.setLineWidth(0.3);doc.line(10,284,pageW-10,284);
+  doc.setTextColor(178,147,107);doc.setFontSize(7);
+  doc.text('Resonance Is the Foundation | allistarcenter.com | Royal Cubit = 523.6mm',pageW/2,289,{align:'center'});
+  doc.save('Allistar_RoyalCubit_'+mm.toFixed(0)+'mm_'+now.slice(0,10)+'.pdf');
+}
+
+// ─── PDF: Wavelength Matcher ───
+function exportWavelengthPDF(){
+  if(typeof window.jspdf==='undefined') return;
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const pageW=doc.internal.pageSize.getWidth();
+  const freq=parseFloat(document.getElementById('wl-freq').value)||4500000;
+  const now=new Date().toISOString().replace('T',' ').slice(0,19);
+  doc.setFillColor(8,15,40);doc.rect(0,0,pageW,297,'F');
+  doc.setDrawColor(201,168,76);doc.setLineWidth(0.8);doc.line(10,8,pageW-10,8);
+  doc.setTextColor(201,168,76);doc.setFont('helvetica','bold');doc.setFontSize(14);
+  doc.text('ALLISTAR CENTER - WAVELENGTH & ANTENNA LENGTHS',pageW/2,18,{align:'center'});
+  doc.setFontSize(8);doc.setTextColor(178,147,107);
+  doc.text('Frequency: '+formatFreqR(freq)+'  |  '+now,pageW/2,24,{align:'center'});
+  doc.setDrawColor(138,104,48);doc.setLineWidth(0.3);doc.line(10,28,pageW-10,28);
+  // summary box
+  const wlCanvas=document.getElementById('wavelengthCanvas');
+  try{doc.addImage(wlCanvas.toDataURL('image/png'),'PNG',10,32,pageW-20,40);}catch(e){}
+  doc.setFillColor(0,8,30);doc.setDrawColor(138,104,48);doc.setLineWidth(0.3);doc.rect(10,76,pageW-20,28,'FD');
+  doc.setTextColor(201,168,76);doc.setFontSize(7);doc.text('WAVELENGTH SUMMARY',14,82);
+  [['Full',document.getElementById('wl-full').textContent],
+   ['Half',document.getElementById('wl-half').textContent],
+   ['Quarter',document.getElementById('wl-quarter').textContent],
+   ['Eighth',document.getElementById('wl-eighth').textContent]].forEach(([l,v],i)=>{
+    const col=i<2?14:pageW/2+2, row=88+(i%2)*8;
+    doc.setTextColor(178,147,107);doc.text(l,col,row);
+    doc.setTextColor(96,200,255);doc.text(v,col+18,row);
+  });
+  doc.setFillColor(0,8,30);doc.setDrawColor(138,104,48);doc.setLineWidth(0.3);doc.rect(10,108,pageW-20,8,'FD');
+  doc.setTextColor(201,168,76);doc.setFontSize(7);
+  ['STEP','LENGTH','RESONATES AT','NOTES'].forEach((h,i)=>doc.text(h,14+i*46,114));
+  let y=122;
+  document.querySelectorAll('#wavelengthTbody tr').forEach(tr=>{
+    if(y>274){doc.addPage();doc.setFillColor(8,15,40);doc.rect(0,0,pageW,297,'F');y=20;}
+    const cells=[...tr.querySelectorAll('td')].map(td=>td.textContent.trim());
+    const isBase=tr.classList.contains('base-row');
+    if(isBase){doc.setFillColor(15,25,60);doc.rect(10,y-4,pageW-20,7,'F');}
+    doc.setTextColor(isBase?238:180,isBase?212:200,isBase?163:220);doc.setFontSize(7);
+    cells.slice(0,4).forEach((c,i)=>doc.text(c.slice(0,18),14+i*46,y));
+    y+=7;
+  });
+  doc.setDrawColor(201,168,76);doc.setLineWidth(0.3);doc.line(10,284,pageW-10,284);
+  doc.setTextColor(178,147,107);doc.setFontSize(7);
+  doc.text('Resonance Is the Foundation | allistarcenter.com',pageW/2,289,{align:'center'});
+  doc.save('Allistar_Wavelength_'+formatFreqR(freq).replace(' ','_')+'_'+now.slice(0,10)+'.pdf');
+}
+
+
+// ─── PDF: Resonant Frequency ───
+function exportResonantPDF(){
+  if(typeof window.jspdf==='undefined'){
+    if(document.getElementById('resonantStatus')) document.getElementById('resonantStatus').textContent='PDF library loading...';
+    return;
+  }
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const pageW=doc.internal.pageSize.getWidth();
+  const now=new Date().toISOString().replace('T',' ').slice(0,19);
+
+  // Pull values from UI
+  const diam=document.getElementById('r-diam').value||'50';
+  const wire=document.getElementById('r-wire').value||'1.5';
+  const turns=document.getElementById('r-turns').value||'10';
+  const cap=document.getElementById('r-cap').value||'100';
+  const coreEl=document.getElementById('r-core');
+  const coreName=coreEl?coreEl.options[coreEl.selectedIndex].text:'Air Core';
+  const freq=document.getElementById('r-freq').textContent||'—';
+  const ind=document.getElementById('r-ind').textContent||'—';
+  const wave=document.getElementById('r-wave').textContent||'—';
+  const infoText=document.getElementById('coreInfo')?document.getElementById('coreInfo').textContent:'';
+
+  // Dark background
+  doc.setFillColor(8,15,40); doc.rect(0,0,pageW,297,'F');
+  doc.setDrawColor(201,168,76); doc.setLineWidth(0.8); doc.line(10,8,pageW-10,8);
+
+  // Header
+  doc.setTextColor(201,168,76); doc.setFont('helvetica','bold'); doc.setFontSize(14);
+  doc.text('ALLISTAR CENTER - RESONANT FREQUENCY REPORT',pageW/2,18,{align:'center'});
+  doc.setFontSize(8); doc.setTextColor(178,147,107);
+  doc.text(now+' UTC',pageW/2,24,{align:'center'});
+  doc.setDrawColor(138,104,48); doc.setLineWidth(0.3); doc.line(10,28,pageW-10,28);
+
+  // Coil parameters box
+  doc.setFillColor(0,8,30); doc.setDrawColor(138,104,48); doc.setLineWidth(0.4);
+  doc.rect(10,32,pageW-20,38,'FD');
+  doc.setTextColor(201,168,76); doc.setFontSize(7); doc.text('COIL PARAMETERS',14,38);
+  doc.setLineWidth(0.2); doc.line(14,40,pageW-14,40);
+
+  const params=[
+    ['Coil Diameter',diam+' mm'],['Wire Gauge',wire+' mm'],
+    ['Turns',turns],['Capacitance',cap+' pF'],
+    ['Core Material',coreName]
+  ];
+  params.forEach(([l,v],i)=>{
+    const col=i<3?14:pageW/2+4;
+    const row=46+(i%3)*8;
+    doc.setTextColor(178,147,107); doc.text(l,col,row);
+    doc.setTextColor(224,216,192); doc.text(v,col+32,row);
+  });
+  if(infoText){
+    doc.setTextColor(96,200,255); doc.setFontSize(6.5);
+    doc.text(infoText.slice(0,120),14,72);
+  }
+
+  // Results box
+  doc.setFillColor(0,8,30); doc.setDrawColor(138,104,48); doc.setLineWidth(0.4);
+  doc.rect(10,74,pageW-20,24,'FD');
+  doc.setTextColor(201,168,76); doc.setFontSize(7); doc.text('CALCULATED RESULTS',14,80);
+  const results=[['Resonant Frequency',freq],['Inductance',ind],['Wavelength',wave]];
+  results.forEach(([l,v],i)=>{
+    const x=14+i*(pageW-28)/3;
+    doc.setTextColor(178,147,107); doc.setFontSize(7); doc.text(l,x,86);
+    doc.setTextColor(96,200,255); doc.setFont('helvetica','bold'); doc.setFontSize(11);
+    doc.text(v,x,93); doc.setFont('helvetica','normal');
+  });
+
+  // Spectrum chart
+  const rc=document.getElementById('resonantCanvas');
+  try{
+    doc.setFillColor(6,14,32); doc.setDrawColor(138,104,48); doc.setLineWidth(0.4);
+    doc.rect(10,102,pageW-20,46,'FD');
+    doc.setTextColor(201,168,76); doc.setFontSize(7); doc.text('PHI-RATIO FREQUENCY CASCADE SPECTRUM',14,108);
+    doc.addImage(rc.toDataURL('image/png'),'PNG',12,110,pageW-24,35);
+  }catch(e){}
+
+  // Phi cascade table
+  doc.setFillColor(0,8,30); doc.setDrawColor(138,104,48); doc.setLineWidth(0.3);
+  doc.rect(10,152,pageW-20,8,'FD');
+  doc.setTextColor(201,168,76); doc.setFontSize(7);
+  ['STEP','FREQUENCY','QUARTER-WAVE','HALF-WAVE','SCHUMANN?'].forEach((h,i)=>
+    doc.text(h,14+i*37,158));
+
+  let y=164;
+  document.querySelectorAll('#resonantTbody tr').forEach(tr=>{
+    if(y>274){doc.addPage();doc.setFillColor(8,15,40);doc.rect(0,0,pageW,297,'F');y=20;}
+    const cells=[...tr.querySelectorAll('td')].map(td=>td.textContent.trim());
+    const isBase=tr.classList.contains('base-row');
+    if(isBase){doc.setFillColor(15,25,60);doc.rect(10,y-4,pageW-20,7,'F');}
+    doc.setTextColor(isBase?238:180,isBase?212:200,isBase?163:220);
+    doc.setFontSize(7);
+    cells.forEach((c,i)=>{
+      if(i===4&&c) doc.setTextColor(96,255,120);
+      else doc.setTextColor(isBase?238:180,isBase?212:200,isBase?163:220);
+      doc.text(c.slice(0,16),14+i*37,y);
+    });
+    y+=7;
+  });
+
+  // Footer
+  doc.setDrawColor(201,168,76); doc.setLineWidth(0.3); doc.line(10,284,pageW-10,284);
+  doc.setTextColor(178,147,107); doc.setFontSize(7);
+  doc.text('Resonance Is the Foundation  |  Allistar Center  |  allistarcenter.com',pageW/2,289,{align:'center'});
+
+  doc.save('Allistar_ResonantFreq_'+freq.replace(/[^a-zA-Z0-9.]/g,'_')+'_'+now.slice(0,10)+'.pdf');
+  if(document.getElementById('resonantStatus'))
+    document.getElementById('resonantStatus').textContent='PDF exported successfully';
+  setTimeout(()=>{
+    const s=document.getElementById('resonantStatus');
+    if(s) s.textContent='';
+  },3000);
+}
+
+
+// ═══════════════════════════════════════════
+// GREAT PYRAMID CALCULATOR
+// ═══════════════════════════════════════════
+// Original dimensions
+const PYR_BASE_M   = 230.33;   // metres
+const PYR_HEIGHT_M = 146.5;    // metres
+const PYR_ROYAL_CUBIT = 0.5236; // metres per cubit
+let pyrAngle = 0.4, pyrAnimating = false, pyrAnimId = null;
+
+function setPyrPreset(val, mode, unit){
+  document.getElementById('pyr-value').value = val;
+  document.getElementById('pyr-mode').value = mode;
+  document.getElementById('pyr-unit').value = unit;
+  calcPyramid();
+}
+
+function toMetres(val, unit){
+  if(unit==='m')     return val;
+  if(unit==='mm')    return val/1000;
+  if(unit==='cm')    return val/100;
+  if(unit==='ft')    return val*0.3048;
+  if(unit==='cubit') return val*PYR_ROYAL_CUBIT;
+  return val;
+}
+function fromMetres(val, unit){
+  if(unit==='m')     return val;
+  if(unit==='mm')    return val*1000;
+  if(unit==='cm')    return val*100;
+  if(unit==='ft')    return val/0.3048;
+  if(unit==='cubit') return val/PYR_ROYAL_CUBIT;
+  return val;
+}
+function fmtN(v, dp){ return v.toFixed(dp||2); }
+
+function calcPyramid(){
+  const rawVal = parseFloat(document.getElementById('pyr-value').value)||1;
+  const mode   = document.getElementById('pyr-mode').value;
+  const unit   = document.getElementById('pyr-unit').value;
+  const valM   = toMetres(rawVal, unit);
+
+  let scale;
+  if(mode==='scale')  scale = rawVal; // raw scale factor (unitless)
+  else if(mode==='base')   scale = valM / PYR_BASE_M;
+  else if(mode==='height') scale = valM / PYR_HEIGHT_M;
+  else if(mode==='model')  scale = valM / PYR_BASE_M; // same as base
+
+  // Scaled dimensions in metres
+  const base   = PYR_BASE_M   * scale;
+  const height = PYR_HEIGHT_M * scale;
+  const halfB  = base / 2;
+  const apothem = Math.sqrt(height*height + halfB*halfB);
+  const edge   = Math.sqrt(height*height + 2*halfB*halfB);
+  const perim  = 4 * base;
+  const slopeAngle = Math.atan(height/halfB) * 180/Math.PI;
+  const phiRatio = apothem/halfB;
+  const piRatio  = perim/(2*height);
+  const baseCubit = base/PYR_ROYAL_CUBIT;
+  const heightCubit = height/PYR_ROYAL_CUBIT;
+
+  // Unit label
+  const dispUnit = unit==='scale' ? 'm' : unit;
+
+  // Helper: format value nicely
+  function fmt(m){
+    const v = fromMetres(m, unit==='scale'?'m':unit);
+    return v>=10000 ? (v/1000).toFixed(3)+' km' :
+           v>=1     ? v.toFixed(3)+' '+(unit==='scale'?'m':unit) :
+                      (v*1000).toFixed(2)+' mm';
+  }
+
+  // Update stat cards
+  document.getElementById('pyr-base').textContent    = fmt(base);
+  document.getElementById('pyr-height').textContent  = fmt(height);
+  document.getElementById('pyr-apothem').textContent = fmt(apothem);
+  document.getElementById('pyr-edge').textContent    = fmt(edge);
+  document.getElementById('pyr-angle').textContent   = slopeAngle.toFixed(2)+'°';
+  document.getElementById('pyr-phi').textContent     = phiRatio.toFixed(5);
+  document.getElementById('pyr-pi').textContent      = piRatio.toFixed(5);
+  document.getElementById('pyr-cubit').textContent   = baseCubit.toFixed(2);
+
+  // Dimension table
+  const dims = [
+    {name:'Base side length',         formula:'440 cubits',       m:base,          rel:'Base unit'},
+    {name:'Height',                   formula:'280 cubits',       m:height,        rel:'Height/half-base = sqrt(phi)'},
+    {name:'Half-base',                formula:'base / 2',         m:halfB,         rel:'Apothem/half-base = phi'},
+    {name:'Apothem (face slant)',     formula:'sqrt(h²+b²/4)',    m:apothem,       rel:'= phi × half-base'},
+    {name:'Edge (apex to corner)',    formula:'sqrt(h²+b²/2)',    m:edge,          rel:'= sqrt(2) × apothem approx'},
+    {name:'Perimeter',               formula:'4 × base',          m:perim,         rel:'perim/2h = pi = 3.14159'},
+    {name:'Face area (one face)',    formula:'base/2 × apothem',  m:base/2*apothem,rel:'mm²'},
+    {name:'Total lateral area',      formula:'4 × face area',     m:2*base*apothem,rel:'4 faces'},
+    {name:'Base area',               formula:'base²',             m:base*base,     rel:'mm²'},
+    {name:'Volume',                  formula:'1/3 × base² × h',   m:(base*base*height)/3, rel:'mm³'},
+    {name:'King Chamber height',     formula:'1/5 × pyramid h',   m:height/5,      rel:'Approx — 1/5 of height'},
+    {name:'Phi × base',              formula:'base × phi',        m:base*PHI,      rel:'phi scale-up of base'},
+    {name:'Base / phi',              formula:'base / phi',        m:base/PHI,      rel:'phi scale-down'},
+  ];
+
+  document.getElementById('pyramidTbody').innerHTML = dims.map((d,i)=>{
+    const mm  = d.m * 1000;
+    const cub = d.m / PYR_ROYAL_CUBIT;
+    const isKey = i<6;
+    return `<tr class="${isKey?'base-row':''}">
+      <td style="color:var(--g-hi);">${d.name}</td>
+      <td class="step">${d.formula}</td>
+      <td class="mm-val">${mm>=1e6?(mm/1e6).toFixed(3)+' km²/³':mm.toFixed(2)+' mm'}</td>
+      <td>${d.m>=1?d.m.toFixed(4)+' m':d.m.toFixed(6)+' m'}</td>
+      <td>${cub.toFixed(4)}</td>
+      <td style="color:${d.rel.includes('phi')||d.rel.includes('pi')?'#60ff80':'rgba(200,220,255,0.5)'};">${d.rel}</td>
+    </tr>`;
+  }).join('');
+
+  // Phi cascade from height
+  const rows=[];
+  for(let n=-3;n<=6;n++){
+    const val=height*Math.pow(PHI,n);
+    let sig='';
+    if(Math.abs(val-height)<0.001) sig='Pyramid height';
+    else if(Math.abs(val-base)<0.001) sig='Pyramid base';
+    else if(Math.abs(val-apothem)<0.001) sig='Apothem';
+    else if(Math.abs(val-PYR_ROYAL_CUBIT)<0.001) sig='Royal Cubit';
+    rows.push({n,mult:Math.pow(PHI,n),val,sig,isBase:n===0});
+  }
+  document.getElementById('pyrPhiTbody').innerHTML = rows.map(r=>`
+    <tr class="${r.isBase?'base-row':''}">
+      <td class="step">phi^${r.n}</td>
+      <td>${r.mult.toFixed(6)}</td>
+      <td class="mm-val">${(r.val*1000).toFixed(3)} mm</td>
+      <td style="color:${r.sig?'#60ff80':'rgba(200,220,255,0.4)'};">${r.sig||''}</td>
+    </tr>`).join('');
+
+  // Draw pyramid
+  drawPyramid(base, height, apothem);
+}
+
+function drawPyramid(base, height, apothem){
+  const canvas=document.getElementById('pyramidCanvas');
+  if(!canvas) return;
+  const W=canvas.offsetWidth||900; canvas.width=W; canvas.height=300;
+  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,300);
+
+  const cx=W/2, cy=170;
+  const scale=Math.min(W*0.35/base, 200/height);
+  const B=base*scale, H=height*scale;
+
+  // 3D isometric-style pyramid
+  const cosA=Math.cos(pyrAngle), sinA=Math.sin(pyrAngle);
+  const tilt=0.35; // vertical compression for iso view
+
+  // Base corners (ground plane)
+  function isoProject(x,z,y){
+    // x,z = ground plane, y = up
+    const rx = x*cosA - z*sinA;
+    const rz = x*sinA + z*cosA;
+    return { px: cx + rx, py: cy - y*H + rz*tilt };
+  }
+
+  const h2=B/2;
+  const A = isoProject(-h2, -h2, 0); // front-left
+  const Bp2= isoProject( h2, -h2, 0); // front-right
+  const C = isoProject( h2,  h2, 0); // back-right
+  const D = isoProject(-h2,  h2, 0); // back-left
+  const Apex = isoProject(0, 0, 1);   // apex
+
+  // Draw base
+  ctx.strokeStyle='rgba(201,168,76,0.4)'; ctx.lineWidth=1; ctx.setLineDash([4,3]);
+  ctx.beginPath(); ctx.moveTo(D.px,D.py); ctx.lineTo(C.px,C.py); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(D.px,D.py); ctx.lineTo(A.px,A.py); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Visible base edges
+  ctx.strokeStyle='rgba(201,168,76,0.6)'; ctx.lineWidth=1.2;
+  ctx.beginPath(); ctx.moveTo(A.px,A.py); ctx.lineTo(Bp2.px,Bp2.py); ctx.lineTo(C.px,C.py); ctx.stroke();
+
+  // Faces
+  const faces=[
+    {pts:[A,Bp2,Apex], color:'rgba(201,120,40,0.35)'},   // front
+    {pts:[Bp2,C,Apex], color:'rgba(160,90,20,0.3)'},      // right
+    {pts:[C,D,Apex],   color:'rgba(100,60,15,0.2)'},      // back (faint)
+    {pts:[D,A,Apex],   color:'rgba(130,80,20,0.25)'},     // left
+  ];
+
+  // Sort by depth
+  const sorted=[...faces].sort((a,b)=>{
+    const za=a.pts.reduce((s,p)=>s+p.py,0)/3;
+    const zb=b.pts.reduce((s,p)=>s+p.py,0)/3;
+    return zb-za;
+  });
+
+  sorted.forEach(face=>{
+    ctx.fillStyle=face.color;
+    ctx.beginPath(); ctx.moveTo(face.pts[0].px,face.pts[0].py);
+    face.pts.forEach(p=>ctx.lineTo(p.px,p.py));
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='rgba(238,212,163,0.7)'; ctx.lineWidth=1.2;
+    ctx.stroke();
+  });
+
+  // Apex dot
+  ctx.fillStyle='rgba(238,212,163,1)';
+  ctx.shadowColor='rgba(238,212,163,0.6)'; ctx.shadowBlur=10;
+  ctx.beginPath(); ctx.arc(Apex.px,Apex.py,4,0,Math.PI*2); ctx.fill();
+  ctx.shadowBlur=0;
+
+  // Height line (dashed)
+  const baseCenter=isoProject(0,0,0);
+  ctx.strokeStyle='rgba(96,200,255,0.5)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(baseCenter.px,baseCenter.py); ctx.lineTo(Apex.px,Apex.py); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Apothem line
+  const midFront=isoProject(0,-h2,0);
+  ctx.strokeStyle='rgba(255,120,255,0.5)'; ctx.lineWidth=1; ctx.setLineDash([2,3]);
+  ctx.beginPath(); ctx.moveTo(midFront.px,midFront.py); ctx.lineTo(Apex.px,Apex.py); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.fillStyle='rgba(96,200,255,0.8)'; ctx.font='9px Share Tech Mono';
+  ctx.fillText('h', (baseCenter.px+Apex.px)/2+6, (baseCenter.py+Apex.py)/2);
+  ctx.fillStyle='rgba(255,120,255,0.8)';
+  ctx.fillText('apothem', (midFront.px+Apex.px)/2+6, (midFront.py+Apex.py)/2);
+  ctx.fillStyle='rgba(201,168,76,0.6)';
+  ctx.fillText('base', (A.px+Bp2.px)/2-12, (A.py+Bp2.py)/2+14);
+
+  // Phi label
+  ctx.fillStyle='rgba(201,168,76,0.35)'; ctx.font='9px Share Tech Mono';
+  ctx.fillText('Great Pyramid | apothem/half-base = phi | perim/2h = pi', 8, 16);
+
+  // Rotate hint
+  ctx.fillStyle='rgba(201,168,76,0.2)'; ctx.font='8px Share Tech Mono';
+  ctx.fillText('< > to rotate', W-65, 16);
+}
+
+// Keyboard rotate
+document.addEventListener('keydown', e=>{
+  if(document.getElementById('tab-pyramid').classList.contains('active')){
+    if(e.key==='ArrowLeft')  { pyrAngle-=0.1; calcPyramid(); }
+    if(e.key==='ArrowRight') { pyrAngle+=0.1; calcPyramid(); }
+  }
+});
+
+// Mouse drag on pyramid canvas
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    const pc=document.getElementById('pyramidCanvas');
+    if(!pc) return;
+    let drag=false, lastX=0;
+    pc.addEventListener('mousedown',e=>{drag=true;lastX=e.clientX;});
+    window.addEventListener('mouseup',()=>drag=false);
+    window.addEventListener('mousemove',e=>{
+      if(!drag) return;
+      pyrAngle+=(e.clientX-lastX)*0.01; lastX=e.clientX; calcPyramid();
+    });
+    pc.addEventListener('touchstart',e=>{drag=true;lastX=e.touches[0].clientX;},{passive:true});
+    window.addEventListener('touchend',()=>drag=false);
+    window.addEventListener('touchmove',e=>{
+      if(!drag) return;
+      pyrAngle+=(e.touches[0].clientX-lastX)*0.01; lastX=e.touches[0].clientX; calcPyramid();
+    },{passive:true});
+  },400);
+});
+
+function copyPyramidTable(){
+  const rows=[...document.querySelectorAll('#pyramidTbody tr')].map(function(tr){return [...tr.querySelectorAll('td')].map(function(td){return td.textContent.trim();}).join(' | ');}).join('\n');
+  const txt='ALLISTAR CENTER - GREAT PYRAMID DIMENSIONS\n\n'+rows;
+  navigator.clipboard.writeText(txt).then(function(){ document.getElementById('pyrStatus').textContent='Table copied'; setTimeout(function(){ document.getElementById('pyrStatus').textContent=''; },2500); });
+}
+
+function exportPyramidPDF(){
+  if(typeof window.jspdf==='undefined') return;
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const pageW=doc.internal.pageSize.getWidth();
+  const now=new Date().toISOString().replace('T',' ').slice(0,19);
+  const base=document.getElementById('pyr-base').textContent;
+  const height=document.getElementById('pyr-height').textContent;
+
+  doc.setFillColor(8,15,40); doc.rect(0,0,pageW,297,'F');
+  doc.setDrawColor(201,168,76); doc.setLineWidth(0.8); doc.line(10,8,pageW-10,8);
+  doc.setTextColor(201,168,76); doc.setFont('helvetica','bold'); doc.setFontSize(15);
+  doc.text('ALLISTAR CENTER',pageW/2,17,{align:'center'});
+  doc.setFontSize(9); doc.setTextColor(178,147,107);
+  doc.text('Great Pyramid of Giza — Scaled Dimension Specification',pageW/2,23,{align:'center'});
+  doc.text('Generated: '+now+' UTC',pageW/2,28,{align:'center'});
+  doc.setDrawColor(138,104,48); doc.setLineWidth(0.3); doc.line(10,31,pageW-10,31);
+
+  // Key stats
+  doc.setFillColor(0,8,30); doc.setDrawColor(138,104,48); doc.setLineWidth(0.4);
+  doc.rect(10,34,pageW-20,28,'FD');
+  doc.setTextColor(201,168,76); doc.setFontSize(7); doc.text('SCALED DIMENSIONS',14,40);
+  const stats=[
+    ['Base',base],['Height',height],
+    ['Apothem',document.getElementById('pyr-apothem').textContent],
+    ['Edge',document.getElementById('pyr-edge').textContent],
+    ['Slope Angle',document.getElementById('pyr-angle').textContent],
+    ['Apothem/Half-base (phi)',document.getElementById('pyr-phi').textContent],
+    ['Perim/2×Height (pi)',document.getElementById('pyr-pi').textContent],
+    ['Base in Cubits',document.getElementById('pyr-cubit').textContent],
+  ];
+  stats.forEach(([l,v],i)=>{
+    const col=i%2===0?14:pageW/2+4;
+    const row=46+Math.floor(i/2)*8;
+    doc.setTextColor(178,147,107); doc.setFontSize(7); doc.text(l,col,row);
+    doc.setTextColor(96,200,255); doc.text(v,col+36,row);
+  });
+
+  // Pyramid diagram
+  const pc=document.getElementById('pyramidCanvas');
+  try{
+    doc.setFillColor(6,14,32); doc.setDrawColor(138,104,48); doc.setLineWidth(0.4);
+    doc.rect(10,66,pageW-20,58,'FD');
+    doc.setTextColor(201,168,76); doc.setFontSize(7); doc.text('3D DIAGRAM',14,72);
+    doc.addImage(pc.toDataURL('image/png'),'PNG',12,74,pageW-24,47);
+  }catch(e){}
+
+  // Dimension table
+  doc.setFillColor(0,8,30); doc.setDrawColor(138,104,48); doc.setLineWidth(0.3);
+  doc.rect(10,128,pageW-20,8,'FD');
+  doc.setTextColor(201,168,76); doc.setFontSize(6.5);
+  ['DIMENSION','FORMULA','mm','m','CUBITS','PHI/PI'].forEach((h,i)=>
+    doc.text(h,[14,48,75,98,118,140][i],134));
+
+  let y=140;
+  document.querySelectorAll('#pyramidTbody tr').forEach(tr=>{
+    if(y>272){doc.addPage();doc.setFillColor(8,15,40);doc.rect(0,0,pageW,297,'F');y=20;}
+    const cells=[...tr.querySelectorAll('td')].map(td=>td.textContent.trim());
+    const isBase=tr.classList.contains('base-row');
+    if(isBase){doc.setFillColor(15,25,60);doc.rect(10,y-4,pageW-20,7,'F');}
+    [14,48,75,98,118,140].forEach((x,i)=>{
+      doc.setTextColor(i===0?(isBase?238:200):i===2?96:180, i===0?(isBase?212:200):i===2?200:190, i===0?(isBase?163:200):i===2?255:200);
+      doc.setFontSize(6.5);
+      doc.text((cells[i]||'').slice(0,22),x,y);
+    });
+    y+=7;
+  });
+
+  // Phi cascade
+  y+=4;
+  if(y<270){
+    doc.setFillColor(0,8,30); doc.setDrawColor(138,104,48); doc.setLineWidth(0.3);
+    doc.rect(10,y,pageW-20,7,'FD');
+    doc.setTextColor(201,168,76); doc.setFontSize(6.5); doc.text('PHI CASCADE FROM HEIGHT',14,y+5);
+    y+=10;
+    document.querySelectorAll('#pyrPhiTbody tr').forEach(tr=>{
+      if(y>278) return;
+      const cells=[...tr.querySelectorAll('td')].map(td=>td.textContent.trim());
+      const isBase=tr.classList.contains('base-row');
+      if(isBase){doc.setFillColor(15,25,60);doc.rect(10,y-4,pageW-20,7,'F');}
+      doc.setTextColor(isBase?238:180,isBase?212:200,isBase?163:200);
+      doc.setFontSize(6.5);
+      [14,50,90,140].forEach((x,i)=>doc.text((cells[i]||'').slice(0,22),x,y));
+      y+=7;
+    });
+  }
+
+  // Math notes
+  doc.setFillColor(0,5,18); doc.setDrawColor(138,104,48); doc.setLineWidth(0.3);
+  if(y+22<285){
+    doc.rect(10,y+2,pageW-20,20,'FD');
+    doc.setTextColor(201,168,76); doc.setFontSize(7); doc.text('ENCODED MATHEMATICS',14,y+8);
+    doc.setTextColor(178,147,107); doc.setFontSize(6.5);
+    doc.text('apothem / half-base = phi = 1.6180339... (golden ratio)',14,y+13);
+    doc.text('perimeter / (2 x height) = pi = 3.14159...  |  height / half-base = sqrt(phi) = 1.2720...',14,y+18);
+  }
+
+  doc.setDrawColor(201,168,76); doc.setLineWidth(0.3); doc.line(10,284,pageW-10,284);
+  doc.setTextColor(178,147,107); doc.setFontSize(7);
+  doc.text('Resonance Is the Foundation  |  Allistar Center  |  allistarcenter.com',pageW/2,289,{align:'center'});
+  doc.save('Allistar_GreatPyramid_'+base.replace(/[^a-zA-Z0-9.]/g,'_')+'_'+now.slice(0,10)+'.pdf');
+  document.getElementById('pyrStatus').textContent='PDF exported';
+  setTimeout(()=>document.getElementById('pyrStatus').textContent='',3000);
+}
+
+</script>
+
+<script>
+// ── Info Panel System ──
+function toggleInfo(id){
+  const panel=document.getElementById('ip-'+id);
+  const btn=document.getElementById('ib-'+id);
+  if(!panel||!btn) return;
+  const isOpen=panel.classList.contains('open');
+  document.querySelectorAll('.info-panel').forEach(p=>p.classList.remove('open'));
+  document.querySelectorAll('.info-btn').forEach(b=>b.classList.remove('open'));
+  if(!isOpen){panel.classList.add('open');btn.classList.add('open');}
+}
+
+const PHI_INFO={
+  geo:['Enter any dimension from your prototype — diameter, height, gap, radius, anything measurable.','Set the unit (mm, cm, m, inches) and the number of steps to generate.','Click Calculate — the full phi cascade appears above and below your base value.','The highlighted BASE ROW is your input. Values above are φ× larger, below are φ× smaller.','Use Copy buttons to transfer values directly into your design software or notes.'],
+  freq:['Enter your fundamental frequency or click a preset (Schumann, 432Hz, antenna frequencies).','Set number of steps — how many phi-ratio harmonics to generate up and down.','Click Calculate — cascade shows frequency, period, and wavelength for each step.','Green rows align with Schumann resonances (7.83, 14.3, 20.8, 27.3, 33.8 Hz).','Phi-ratio frequencies never destructively interfere — ideal for resonant cascade design.'],
+  cubit:['Enter any dimension and select the source unit (mm, cm, inches, cubits).','The calculator converts to Royal Cubits (1 cubit = 523.6mm) and shows phi relationships.','The Royal Cubit encodes both π and φ in its definition — it is a natural harmonic unit.','Use to verify if your prototype dimensions align with ancient harmonic proportions.','The Great Pyramid base (440 cubits) and height (280 cubits) encode φ directly in their ratio.'],
+  resonant:['Enter coil dimensions: diameter (mm), wire gauge (mm), turns, and capacitance (pF).','Select core material — air core gives the most accurate result for copper coils.','Click Calculate Resonance — LC resonant frequency and Q factor appear instantly.','The phi cascade below shows which phi-ratio harmonics align with your resonant frequency.','Use Export PDF to save the complete calculation as a documented research result.'],
+  sacred:['Click a preset to load a sacred geometry form — Flower of Life, Metatron\'s Cube, etc.','Enter a base radius to scale the geometry to your prototype dimensions.','The diagram shows exact proportions, intersection points, and phi-ratio relationships.','Use these forms as templates for winding patterns, conductor layouts, or cavity geometry.','Each form encodes a specific field symmetry — the shape determines the resonant pattern.'],
+  wavelength:['Enter a frequency manually or click a preset (Schumann, antenna, prototype frequencies).','Select propagation medium — wavelength changes with signal speed in each material.','Read full wavelength, half wavelength (λ/2), and quarter wavelength (λ/4).','λ/4 is the natural resonant length for antennas — use it for rod and conductor sizing.','Copper conductor wavelength differs from free space — always select the correct medium.'],
+  fractal:['Select fractal type: Sierpiński Gasket, Sierpiński Carpet, or Koch Snowflake.','Enter the base dimension (side length or radius) of your physical structure in mm.','Set number of iterations — each adds one level of self-similar resonant structure.','The calculator shows resonant frequencies produced by each iteration level.','For the Sierpiński gasket prototype: each hole corresponds to one iteration resonant cavity.'],
+  platonic:['Select a Platonic solid: Tetrahedron, Cube, Octahedron, Dodecahedron, or Icosahedron.','Enter the edge length in mm — all other dimensions derive from this single input.','Read inradius, circumradius, face diagonal, and space diagonal for your solid.','Phi ratio appears naturally in dodecahedron and icosahedron — they encode φ structurally.','Use for spark gap geometry, copper rod length ratios, or nested sphere spacing design.'],
+  pyramid:['Select calculation mode: from base width, height, slope angle, or volume.','Enter your known dimension — all other proportions are derived automatically.','Drag the 3D view to rotate the pyramid. Use arrow keys for fine angle control.','The Great Pyramid encodes φ, π, and the Royal Cubit simultaneously in its proportions.','Use to verify if your prototype geometry aligns with pyramid harmonic ratios.']
+};
+
+document.addEventListener('DOMContentLoaded',function(){
+  const defs=[
+    {id:'geo',       near:"button[onclick=\"calcGeo()\"]"},
+    {id:'freq',      near:"button[onclick=\"calcFreq()\"]"},
+    {id:'resonant',  near:"button[onclick=\"calcResonant()\"]"},
+    {id:'wavelength',near:"button[onclick=\"exportWavelengthPDF()\"]"},
+    {id:'fractal',   near:"button[onclick=\"setFractalType('sierpinski',this)\"]"},
+  ];
+
+  defs.forEach(({id,near})=>{
+    const target=document.querySelector(near);
+    if(!target) return;
+    const steps=PHI_INFO[id];
+    if(!steps) return;
+    const ib=document.createElement('button');
+    ib.id='ib-'+id; ib.className='info-btn'; ib.textContent='i';
+    ib.title='How to use'; ib.type='button';
+    ib.onclick=()=>toggleInfo(id);
+    target.insertAdjacentElement('afterend',ib);
+    const panel=document.createElement('div');
+    panel.id='ip-'+id; panel.className='info-panel';
+    panel.innerHTML='<ol>'+steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>';
+    const parent=target.parentElement;
+    parent.insertAdjacentElement('afterend',panel);
+  });
+
+  // Sacred geometry — attach to first preset button
+  const sacredBtn=document.querySelector("button[onclick=\"loadSacredForm('flower',this)\"]");
+  if(sacredBtn){
+    const ib=document.createElement('button');
+    ib.id='ib-sacred'; ib.className='info-btn'; ib.textContent='i';
+    ib.type='button'; ib.onclick=()=>toggleInfo('sacred');
+    sacredBtn.insertAdjacentElement('afterend',ib);
+    const panel=document.createElement('div');
+    panel.id='ip-sacred'; panel.className='info-panel';
+    panel.innerHTML='<ol>'+PHI_INFO['sacred'].map(s=>'<li>'+s+'</li>').join('')+'</ol>';
+    sacredBtn.parentElement.insertAdjacentElement('afterend',panel);
+  }
+
+  // Cubit tab — attach to tab header
+  const cubitTab=document.getElementById('tab-cubit');
+  if(cubitTab){
+    const firstChild=cubitTab.firstElementChild;
+    if(firstChild){
+      const ib=document.createElement('button');
+      ib.id='ib-cubit'; ib.className='info-btn'; ib.textContent='i';
+      ib.type='button'; ib.onclick=()=>toggleInfo('cubit');
+      firstChild.insertAdjacentElement('afterbegin',ib);
+      const panel=document.createElement('div');
+      panel.id='ip-cubit'; panel.className='info-panel';
+      panel.innerHTML='<ol>'+PHI_INFO['cubit'].map(s=>'<li>'+s+'</li>').join('')+'</ol>';
+      firstChild.insertAdjacentElement('afterend',panel);
+    }
+  }
+
+  // Platonic tab
+  const platonicTab=document.getElementById('tab-platonic');
+  if(platonicTab){
+    const firstChild=platonicTab.firstElementChild;
+    if(firstChild){
+      const ib=document.createElement('button');
+      ib.id='ib-platonic'; ib.className='info-btn'; ib.textContent='i';
+      ib.type='button'; ib.onclick=()=>toggleInfo('platonic');
+      firstChild.insertAdjacentElement('afterbegin',ib);
+      const panel=document.createElement('div');
+      panel.id='ip-platonic'; panel.className='info-panel';
+      panel.innerHTML='<ol>'+PHI_INFO['platonic'].map(s=>'<li>'+s+'</li>').join('')+'</ol>';
+      firstChild.insertAdjacentElement('afterend',panel);
+    }
+  }
+
+  // Pyramid tab
+  const pyrBtn=document.querySelector("button[onclick=\"calcPyramid()\"]");
+  if(pyrBtn){
+    const ib=document.createElement('button');
+    ib.id='ib-pyramid'; ib.className='info-btn'; ib.textContent='i';
+    ib.type='button'; ib.onclick=()=>toggleInfo('pyramid');
+    pyrBtn.insertAdjacentElement('afterend',ib);
+    const panel=document.createElement('div');
+    panel.id='ip-pyramid'; panel.className='info-panel';
+    panel.innerHTML='<ol>'+PHI_INFO['pyramid'].map(s=>'<li>'+s+'</li>').join('')+'</ol>';
+    pyrBtn.parentElement.insertAdjacentElement('afterend',panel);
+  }
+});
+</script>
+</body>
+</html>
